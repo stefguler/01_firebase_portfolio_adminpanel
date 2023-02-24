@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, Subject } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs';
 import { throwError } from 'rxjs';
@@ -50,6 +50,7 @@ export class ProjectRequestsService {
           if (res.hasOwnProperty(key)) {
             projects.push({ ...res[key], id: key })
           }
+          
         }
         return projects
         //catch the error and log it somewhere
@@ -66,6 +67,10 @@ export class ProjectRequestsService {
   deleteProject(id: string) {
       this.http.delete<any>(`${this.url}/${id}.json`)
       .subscribe();
+  }
+
+  getProject(id: string): Observable<Project> {
+    return this.http.get<Project>(`${this.url}/${id}.json`);
   }
 
   deleteAllProjects() {

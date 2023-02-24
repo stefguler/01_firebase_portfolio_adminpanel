@@ -21,10 +21,10 @@
   <button class="admin" (click)="navigate('admin')">Go to Admin Panel</button>
 
   <ngb-carousel [interval]="4000" [wrap]="true">
-    <ng-template ngbSlide *ngFor="let project of projects">
-      <div class="project-container" (click)="navigateToProject(project.id.toString())">
-        <img class=preview src="{{ project.imgPost }}" alt="{{ project.altText }}">
-        <div class="hide">{{ project.title }}</div>
+    <ng-template ngbSlide *ngFor="let project of allProjects">
+      <div class="project-container" style="display:flex; flex-direction: columns; justify-content: center; align-items: center;" (click)="navigateToProject(project.id.toString())">
+        <div class=preview style="background-color: green; width: 100%; height: 12rem"></div>
+        <div class="hide" style="position: absolute; top:0; left: 0">{{ project.title }}</div>
       </div>
     </ng-template>
   </ngb-carousel>

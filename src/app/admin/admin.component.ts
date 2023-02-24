@@ -1,3 +1,4 @@
+import { NavigationService } from './../services/navigation.service';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Project } from '../models/project';
@@ -20,7 +21,8 @@ export class AdminComponent implements OnInit {
   errorMessage: string = null;
   errorSub: Subscription;
 
-  constructor(private projectRequestService: ProjectRequestsService) { 
+  constructor(private projectRequestService: ProjectRequestsService, 
+    private navigationService: NavigationService) { 
     }
 
     ngOnInit() {
@@ -29,7 +31,6 @@ export class AdminComponent implements OnInit {
         this.errorMessage = msg;
       })
 
-      console.log('all Projects', this.allProjects)
     }
 
 
@@ -114,6 +115,10 @@ export class AdminComponent implements OnInit {
     //change value from "Add Product" - button to "Update Product" Button
     this.editMode = true;
 
+  }
+
+  navigate(adress: string) {
+    this.navigationService.navigateTo(adress)
   }
 
 }

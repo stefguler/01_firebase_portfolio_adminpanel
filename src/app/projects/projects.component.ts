@@ -1,3 +1,4 @@
+import { ProjectRequestsService } from './../services/project-requests.service';
 
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -15,18 +16,20 @@ export class ProjectsComponent {
   projectId: string;
   RouteParamObs;
 
-  constructor(private activeRoute: ActivatedRoute, private navigationService: NavigationService) {
+  constructor(private activeRoute: ActivatedRoute, private navigationService: NavigationService, private projectRequestService: ProjectRequestsService) {
   }
 
   ngOnInit() {
     this.RouteParamObs = this.activeRoute.paramMap.subscribe((param) => {  // use observable to retrieve the ID, because once the ngOnInit has instantiated the activeRoute, it will not do so again and you will have the same id all the time
       this.projectId = param.get('id')
-      // this.project = this.projectsService.projects.find(x => x.id.toString() === this.projectId)
+      this.projectRequestService.getProject(this.projectId).subscribe((project: Project) => {
+        this.project = project;
+      })
     });
   }
 
   navigateBack() {
-    this.navigationService.navigateTo('portfolio')
+    this.navigationService.navigateTo('')
   }
 
 }
