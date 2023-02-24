@@ -1,0 +1,32 @@
+<article id="work">
+  <div class="article-header">
+    <h2 class="major">Meine Projekte</h2>
+    <div class="close">X</div>
+  </div>
+  <!-- <span class="image main"><img src="assets/images/pic02.jpg" alt="" /></span> -->
+  <p>Adipiscing magna sed dolor elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat
+    volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus
+    ultrices.</p>
+  <!-- <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus pharetra. Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus amet feugiat tempus.</p> -->
+  <!-- <div class="portfolio-grid">
+    <ul *ngFor="let project of projects">
+      <div class="project-container">
+        <img src="{{project.imgPost}}" style="width: 20rem">
+        {{project.title}}
+      </div>
+    </ul>
+    </div> -->
+
+      
+  <button class="admin" (click)="navigate('admin')">Go to Admin Panel</button>
+
+  <ngb-carousel [interval]="4000" [wrap]="true">
+    <ng-template ngbSlide *ngFor="let project of projects">
+      <div class="project-container" (click)="navigateToProject(project.id.toString())">
+        <img class=preview src="{{ project.imgPost }}" alt="{{ project.altText }}">
+        <div class="hide">{{ project.title }}</div>
+      </div>
+    </ng-template>
+  </ngb-carousel>
+
+</article>

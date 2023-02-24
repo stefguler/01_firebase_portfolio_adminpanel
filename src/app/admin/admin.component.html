@@ -1,0 +1,102 @@
+<div class="main-area">
+  <div class="content-area">
+    <div class="header">
+      <h1>Manage Projects</h1>
+      <hr>
+    </div>
+    <div class="container">
+      <!--Add product form-->
+      <div class="form-area">
+        <h3>Create Product</h3>
+        <form #projectForm ="ngForm" (ngSubmit)="onProjectCreate(projectForm.value)">
+          <label>Project Title</label>
+          <input type="text" name="title" ngModel>
+
+          <label>Project Date</label>
+          <input type="date" name="date" ngModel>
+
+          <label>Project Object</label>
+          <input type="string" name="object" ngModel> <!--selector-->
+      
+          <label>Project Model</label>
+          <input type="string" name="model" ngModel> 
+
+          <label>Project Description</label>
+          <input type="text" name="description" ngModel>
+
+          <label>Project Technique</label>
+          <input type="text" name="technique" ngModel>
+
+          <label>Project Colors</label>
+          <input type="text" name="colors" ngModel>
+
+          <label>Project Price</label>
+          <input type="string" name="price" ngModel>
+      
+          <label>Project Pre Image</label>
+          <input type="string" name="imgPre" ngModel>
+
+          <label>Project Post Image</label>
+          <input type="string" name="imgPost" ngModel>
+
+          <label>Picture Alt Text</label>
+          <input type="string" name="altText" ngModel>
+        
+          <input type="submit" value="{{editMode ? 'Update Project' : 'Add Project'}}" >
+        </form>
+      </div>
+
+      <!--Display product area-->
+      <div class="project-display-area">
+        <h3>All Products</h3>
+        <table id="projects">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Object</th>
+            <th>Model</th>
+            <th>Description</th>
+            <th>Technique</th>
+            <th>Colors</th>
+            <th>Price</th>
+            <th>Image Pre</th>
+            <th>Image Post</th>
+            <th>Picture Alt Text</th>
+            <th>Actions</th>
+          </tr>
+          <tr *ngIf="allProjects.length < 1 && !isFetching">
+            <td colspan="2">No Products Available</td>
+          </tr>
+          <tr *ngIf="errorMessage">
+            <td colspan="2">{{errorMessage}}</td>
+          </tr>
+          <tr *ngIf="isFetching && !errorMessage">
+            <td colspan="2">Loading...</td>
+          </tr>
+          <tr *ngFor="let project of allProjects, index as i">
+            <td>{{i +1}}</td>
+            <td>{{project.title}}</td>
+            <td>{{project.date}}</td>
+            <td>{{project.object}}</td>
+            <td>{{project.model}}</td>
+            <td>{{project.description}}</td>
+            <td>{{project.technique}}</td>
+            <td>{{project.colors}}</td>
+            <td>{{project.price}}</td>
+            <td>{{project.imgPre}}</td>
+            <td>{{project.imgPost}}</td>
+            <td>{{project.altText}}</td>
+            <td><button class="btn-delete" (click)="onDeleteProject(project.id.toString())">Delete</button>
+            <td><button class="btn-edit" (click)="onEditClicked(project.id.toString())">Edit</button></td>
+          </tr>
+        </table>
+        <hr>
+        <div class="action-btn-container">
+          <button class="btn-fetch" (click)="onFetchProjects()">Fetch Product</button>
+          <button class="btn-clear" (click)="onDeleteAllProjects()">Clear Product</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

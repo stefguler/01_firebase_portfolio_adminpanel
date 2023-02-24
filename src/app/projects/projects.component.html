@@ -1,0 +1,56 @@
+<article id="project">
+  <div class="article-header">
+    <h2 class="major">{{project.title}}</h2>
+    <div class="close" (click)="navigateBack()">X</div>
+  </div>
+  <p>{{project.description}}</p>
+  <h3>Spezifikationen</h3>
+    <ul>
+      <li>
+        <div class="specification">
+          <span>Datum:</span>
+          <span>{{ project.date | date }}</span>
+        </div>
+      </li>
+      <li>
+        <div class="specification">
+          <span>Fahrzeug:</span>
+          <span>{{ project.object }}</span>
+        </div>
+      </li>
+      <li>
+        <div class="specification">
+          <span>Modell:</span>
+          <span> {{project.model}}</span>
+        </div>
+      </li>
+      <li>
+        <div class="specification">
+          <span>Methodik:</span>
+          <span> {{project.technique}}</span>
+        </div>
+      </li>
+      <li>
+        <div class="specification">
+          <span>Farben:</span>
+          <span> {{project.colors}}</span>
+        </div>
+      </li>
+      <li>
+        <div class="specification">
+          <span>Preis:</span>
+          <span> {{project.price}} CHF</span>
+        </div>
+      </li>
+    </ul>
+  <div class="image-container">
+    <div class="pre">
+      <h3>Vorher</h3>
+      <img src="{{project.imgPre}}">
+    </div>
+    <div class="post">
+      <h3>Nachher</h3>
+      <img src="{{project.imgPost}}">
+    </div>
+  </div>
+</article>
