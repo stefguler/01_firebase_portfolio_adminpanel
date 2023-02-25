@@ -1,5 +1,5 @@
 export class Project {
-  id: number;
+  id: string;
   date: Date;
   object: string;
   model: string;

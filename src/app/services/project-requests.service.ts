@@ -16,7 +16,7 @@ export class ProjectRequestsService {
   constructor(private http: HttpClient) { }
 
   createProject(project: {   
-        id: number;
+        id: string;
         date: Date;
         object: string;
         model: string;

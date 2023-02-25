@@ -34,9 +34,13 @@
           <input type="string" name="price" ngModel>
       
           <label>Project Pre Image</label>
+          <input type="file" (change)="onPreImageChange($event)" name="Preimage" required>
+          <img [src]="preImageSrc" *ngIf="preImageSrc" style="width: 10rem">
           <input type="string" name="imgPre" ngModel>
-
+          
           <label>Project Post Image</label>
+          <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
+          <img [src]="postImageSrc" *ngIf="postImageSrc" style="width: 10rem">
           <input type="string" name="imgPost" ngModel>
 
           <label>Picture Alt Text</label>
@@ -99,6 +103,5 @@
       </div>
     </div>
   </div>
-
 </div>
 <button alt="return btn" (click)="navigate('')">Return to Portfolio</button>
