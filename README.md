@@ -7,6 +7,6 @@ My first approach using Firebase as a database / semi-backend to manage your ang
 
 AND
 
-![download](https://user-images.githubusercontent.com/93710089/221360400-1dfb48e1-4904-414e-a0c6-5198ce7cb87f.png)
+![download](https://user-images.githubusercontent.com/93710089/221360400-1dfb48e1-4904-414e-a0c6-5198ce7cb87f.png)\
 [Firebase!](https://firebase.google.com/)
 
