@@ -2,7 +2,7 @@
 
 My first approach using Firebase as a database / semi-backend to manage your angular frontend
 
-&copy Thank you
+:copyright: Thank you
 ![download (2)](https://user-images.githubusercontent.com/93710089/221360401-4febb4e4-7327-4ccf-909d-6b46c00983f5.png)
 
 AND
