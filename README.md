@@ -4,7 +4,7 @@ My first approach using Firebase as a database / semi-backend to manage your ang
 
 :copyright: Thank you\
 
-<img src="[https://user-images.githubusercontent.com/93710089/221360401-4febb4e4-7327-4ccf-909d-6b46c00983f5.png])" data-canonical-src="https://user-images.githubusercontent.com/93710089/221360401-4febb4e4-7327-4ccf-909d-6b46c00983f5.png" width="200" height="400" />
+<img src="[https://user-images.githubusercontent.com/93710089/221360401-4febb4e4-7327-4ccf-909d-6b46c00983f5.png])" width="20" height="40" />
 
 AND
 
