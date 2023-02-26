@@ -216,8 +216,16 @@ export class AdminComponent implements OnInit {
 
 
   //DELETE using a http request service
+  // onDeleteProject(id: string) {
+  //   this.projectRequestService.deleteProject(id);
+  // }
+
   onDeleteProject(id: string) {
-    this.projectRequestService.deleteProject(id);
+    this.projectRequestService.deleteProject(id).subscribe(() => {
+      this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
+        this.allProjects = projects;
+      });
+    });
   }
 
   onDeleteAllProjects() {

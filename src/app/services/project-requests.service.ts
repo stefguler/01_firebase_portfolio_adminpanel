@@ -76,21 +76,21 @@ export class ProjectRequestsService {
     return this.http.get<{ [key: string]: Project }>(`${this.url}.json`)
       //transform the data to usefull format
       .pipe(map((res) => {
-        const projects = [];
+        const projectsArray = [];
         for (const key in res) {
           if (res.hasOwnProperty(key)) {
-            projects.push({ ...res[key], id: key })
+            projectsArray.push({ ...res[key], id: key })
           }
 
         }
-        return projects
+        return projectsArray
         //catch the error and log it somewhere
-      }), catchError((err) => {
+      }), catchError((errorRes) => {
 
         //implement here what you wan't to do with your error!
 
         //always make sure to return the error here
-        return throwError(err);
+        return throwError(errorRes);
       }))
   }
 
@@ -100,9 +100,8 @@ export class ProjectRequestsService {
   }
 
   //delete a specific project from database
-  deleteProject(id: string) {
-    this.http.delete<any>(`${this.url}/${id}.json`)
-      .subscribe();
+  deleteProject(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.url}/${id}.json`);
   }
 
   // delete all projects from DB
