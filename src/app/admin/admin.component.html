@@ -40,11 +40,8 @@
           
           <label>Project Post Image</label>
           <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
-          <img [src]="postImageSrc" *ngIf="postImageSrc" style="width: 10rem">
+          <img [src]="postImageSrc" *ngIf="postImageSrc"  style="width: 10rem">
           <input type="string" name="imgPost" ngModel>
-
-          <label>Picture Alt Text</label>
-          <input type="string" name="altText" ngModel>
         
           <input type="submit" value="{{editMode ? 'Update Project' : 'Add Project'}}" >
         </form>
@@ -66,7 +63,6 @@
             <th>Price</th>
             <th>Image Pre</th>
             <th>Image Post</th>
-            <th>Picture Alt Text</th>
             <th>Actions</th>
           </tr>
           <tr *ngIf="allProjects.length < 1 && !isFetching">
@@ -90,9 +86,8 @@
             <td>{{project.price}}</td>
             <td>{{project.imgPre}}</td>
             <td>{{project.imgPost}}</td>
-            <td>{{project.altText}}</td>
-            <td><button class="btn-delete" (click)="onDeleteProject(project.id.toString())">Delete</button>
-            <td><button class="btn-edit" (click)="onEditClicked(project.id.toString())">Edit</button></td>
+            <td><button class="btn-delete" (click)="onDeleteProject(project.id)">Delete</button>
+            <td><button class="btn-edit" (click)="onEditClicked(project.id)">Edit</button></td>
           </tr>
         </table>
         <hr>

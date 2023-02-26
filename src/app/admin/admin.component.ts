@@ -6,8 +6,9 @@ import { ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { ProjectRequestsService } from '../services/project-requests.service';
 
-import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { AngularFireStorage, AngularFireStorageReference } from '@angular/fire/compat/storage';
 import 'firebase/compat/storage';
+import firebase from 'firebase/compat/app';
 import { Observable, } from 'rxjs';
 
 @Component({
@@ -60,42 +61,47 @@ export class AdminComponent implements OnInit {
     imgPost: string;
     altText: string;
   }) {
-  
+
     // Update an existing project
     const projectData = { ...projectFormValue };
     const projectImagePaths = {};
     const storageRef = this.storage.ref('project-images');
-  
+
     // Upload pre-image
     const preImageName = this.preImgUrl //`${new Date().getTime()}_${this.preImgFile?.name}`;
     const preImagePath = `pre/${preImageName}`;
     const preImageRef = storageRef.child(preImagePath);
     const preImageTask = preImageRef.put(this.preImgFile!);
     projectImagePaths['imgPre'] = preImagePath;
-  
+
     // Upload post-image
     const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
     const postImagePath = `post/${postImageName}`;
     const postImageRef = storageRef.child(postImagePath);
     const postImageTask = postImageRef.put(this.postImgFile!);
     projectImagePaths['imgPost'] = postImagePath;
-  
-    console.log("editmode ", this.editMode)
-  
+
+    // create alt Text
+    const altText = `${projectData.title}: Ein ${projectData.model} ${projectData.object} nach dem Einsatz von ${projectData.technique}`
+    projectData['altText'] = altText;
+
+
     // Wait for both image uploads to complete
     Promise.all([preImageTask, postImageTask])
       .then(() => {
         // Add the image paths to the project data
         Object.assign(projectData, projectImagePaths);
-  
+
         // create or update the project in the database
         let request: Observable<any>;
+
         if (this.editMode) {
           request = this.projectRequestService.updateProject(this.currentProjectId, projectData);
         } else {
+          console.log('here is the project data before create trigger: ', projectData)
           request = this.projectRequestService.createProject(projectData);
         }
-  
+
         // Subscribe to the request to update the allProjects array
         request.subscribe((response: any) => {
           if (this.editMode) {
@@ -106,14 +112,18 @@ export class AdminComponent implements OnInit {
             // Add the new project to the beginning of the allProjects array
             this.allProjects.unshift(response);
           }
-  
+
           // Reset the form
           this.form.reset();
           this.editMode = false;
           this.preImageSrc = "";
           this.postImageSrc = "";
+          this.preImgFile = null;
+          this.postImgFile = null;
+          this.preImgUrl = null;
+          this.postImgUrl = null;
         });
-  
+
       });
   }
 
@@ -182,7 +192,7 @@ export class AdminComponent implements OnInit {
   //                 observer.error(error);
   //               });
   //           }
-          
+
   //         }).then(() => {
   //           this.editMode = false;
   //           this.fetchProjects();
@@ -200,6 +210,7 @@ export class AdminComponent implements OnInit {
 
 
   // FETCH / GET using a http request service
+
   private fetchProjects() {
     this.isFetching = true;
     this.projectRequestService.fetchProjects().subscribe((response) => {
@@ -229,8 +240,17 @@ export class AdminComponent implements OnInit {
   }
 
   onDeleteAllProjects() {
-    this.projectRequestService.deleteAllProjects();
+    this.projectRequestService.deleteAllProjects().subscribe(() => {
+      this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
+        this.allProjects = projects;
+      });
+    });
   }
+
+  //old way
+  // onDeleteAllProjects() {
+  //   this.projectRequestService.deleteAllProjects();
+  // }
 
   // UPDATE using a http request service
 
@@ -241,7 +261,54 @@ export class AdminComponent implements OnInit {
       return project.id === id
     })
 
-    console.log(currentProject)
+
+    //handle images
+    console.log(currentProject.imgPre)
+    console.log(currentProject.imgPost)
+
+    if (currentProject.imgPre != 'pre/null') {
+      const storageRef = this.storage.ref(`project-images/${currentProject.imgPre}`);
+      storageRef.getDownloadURL().subscribe((url) => {
+        // Use the url to display the image in your HTML view
+        console.log(url)
+        this.preImageSrc = url;
+      });
+    } else {
+      this.preImageSrc = '/assets/images/noimage.webg'
+    }
+
+    
+    if (currentProject.imgPost != 'post/null') {
+      const storageRef = this.storage.ref(`project-images/${currentProject.imgPost}`);
+      storageRef.getDownloadURL().subscribe((url) => {
+        // Use the url to display the image in your HTML view
+        console.log(url)
+        this.postImageSrc = url;
+      });
+    } else {
+      console.log('was hit!')
+      this.postImageSrc = '/assets/images/noimage.webp'
+      console.log('this port img src', this.postImageSrc)
+    }
+
+
+    // const storageRefimgPre = this.storage.ref(`project-images/${currentProject.imgPre}`);
+    // const storageRefimgPost = this.storage.ref(`project-images/${currentProject.imgPost}`);
+    // // const imgPreRef = storageRef.child(currentProject.imgPre); 
+
+    // storageRefimgPre.getDownloadURL().subscribe((url) => {
+    //   // Use the url to display the image in your HTML view
+    //   console.log(url)
+    //   this.preImageSrc = url;
+    // });
+
+    // storageRefimgPost.getDownloadURL().subscribe((url) => {
+    //   // Use the url to display the image in your HTML view
+    //   console.log(url)
+    //   this.postImageSrc = url;
+    // });
+ 
+
 
     //reset the pre and post imgs preview
     this.preImageSrc = ""
@@ -260,7 +327,6 @@ export class AdminComponent implements OnInit {
       price: currentProject.price,
       imgPre: currentProject.imgPre,
       imgPost: currentProject.imgPost,
-      altText: currentProject.altText
     });
 
     //change value from "Add Product" - button to "Update Product" Button
@@ -316,7 +382,7 @@ export class AdminComponent implements OnInit {
     };
     reader.readAsDataURL(this.preImgFile);
   }
-  
+
   loadPostImage() {
     const reader = new FileReader();
     reader.onload = (event: any) => {

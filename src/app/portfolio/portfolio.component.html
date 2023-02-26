@@ -24,6 +24,7 @@
     <ng-template ngbSlide *ngFor="let project of allProjects">
       <div class="project-container" style="display:flex; flex-direction: columns; justify-content: center; align-items: center;" (click)="navigateToProject(project.id.toString())">
         <div class=preview style="background-color: green; width: 100%; height: 12rem"></div>
+        <img src={{project.imgPre}} style="width: 100%; position: absolute"  alt={{project.altText}}>
         <div class="hide" style="position: absolute; top:0; left: 0">{{ project.title }}</div>
       </div>
     </ng-template>

@@ -105,10 +105,15 @@ export class ProjectRequestsService {
   }
 
   // delete all projects from DB
-  deleteAllProjects() {
-    this.http.delete<any>(`${this.url}.json`)
-      .subscribe();
+  deleteAllProjects(): Observable<any> {
+    return this.http.delete<any>(`${this.url}.json`);
   }
+  
+  //old way
+  // deleteAllProjects() {
+  //   this.http.delete<any>(`${this.url}.json`)
+  //     .subscribe();
+  // }
 
   updateProject(id: string, project: Project): Observable<any> {
     return this.http.put<any>(`${this.url}/${id}.json`, project);
