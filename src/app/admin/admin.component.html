@@ -8,7 +8,7 @@
       <!--Add product form-->
       <div class="form-area">
         <h3>Create Product</h3>
-        <form #projectForm ="ngForm" (ngSubmit)="onProjectCreate(projectForm.value)">
+        <form #projectForm ="ngForm" (ngSubmit)="onProjectCreateOrUpdate(projectForm.value)">
           <label>Project Title</label>
           <input type="text" name="title" ngModel>
 

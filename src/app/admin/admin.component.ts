@@ -7,9 +7,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { ProjectRequestsService } from '../services/project-requests.service';
 
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
-import { finalize } from 'rxjs';
+import { Observable, } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -47,34 +46,7 @@ export class AdminComponent implements OnInit {
 
   }
 
-  // POST using a http request service
-  // onProjectCreate(project: {
-  //       id: number;
-  //       date: Date;
-  //       object: string;
-  //       model: string;
-  //       title: string;
-  //       description: string;
-  //       technique: string;
-  //       colors: string[];
-  //       price: string;
-  //       imgPre: string;
-  //       imgPost: string;
-  //       altText: string; 
-  //     }) {
-
-  //   if (!this.editMode) {
-  //     console.log(project)
-  //     this.projectRequestService.createProject(project)
-  //   }
-  //   else {
-  //     this.projectRequestService.updateProject(this.currentProjectId, project)
-  //     this.editMode = false;
-  //   }
-  // }
-
-
-  onProjectCreate(projectFormValue: {
+  onProjectCreateOrUpdate(projectFormValue: {
     id: string;
     date: Date;
     object: string;
@@ -88,78 +60,142 @@ export class AdminComponent implements OnInit {
     imgPost: string;
     altText: string;
   }) {
-    if (this.editMode) {
-      // Update an existing project
-      // Create a new project
-      const projectData = { ...projectFormValue };
-      const projectImagePaths = {};
-      const storageRef = this.storage.ref('project-images');
-      this.editMode = false;
-      // Upload pre-image
-      console.log('filename pre', this.preImgFile)
-      console.log('filename pre', this.preImgFile?.name)
-      const preImageName = this.preImgUrl//`${new Date().getTime()}_${this.preImgFile?.name}`;
-      const preImagePath = `pre/${preImageName}`;
-      const preImageRef = storageRef.child(preImagePath);
-      const preImageTask = preImageRef.put(this.preImgFile!);
-      projectImagePaths['imgPre'] = preImagePath;
-
-      // Upload post-image
-      console.log('filename post', this.preImgFile?.name)
-      const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
-      const postImagePath = `post/${postImageName}`;
-      const postImageRef = storageRef.child(postImagePath);
-      const postImageTask = postImageRef.put(this.postImgFile!);
-      projectImagePaths['imgPost'] = postImagePath;
-
-      // Wait for both image uploads to complete
-      Promise.all([preImageTask, postImageTask])
-        .then(() => {
-          // Add the image paths to the project data
-          Object.assign(projectData, projectImagePaths);
-
-          // Create the project in the database
-          this.projectRequestService.updateProject(this.currentProjectId, projectData);
+  
+    // Update an existing project
+    const projectData = { ...projectFormValue };
+    const projectImagePaths = {};
+    const storageRef = this.storage.ref('project-images');
+  
+    // Upload pre-image
+    const preImageName = this.preImgUrl //`${new Date().getTime()}_${this.preImgFile?.name}`;
+    const preImagePath = `pre/${preImageName}`;
+    const preImageRef = storageRef.child(preImagePath);
+    const preImageTask = preImageRef.put(this.preImgFile!);
+    projectImagePaths['imgPre'] = preImagePath;
+  
+    // Upload post-image
+    const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
+    const postImagePath = `post/${postImageName}`;
+    const postImageRef = storageRef.child(postImagePath);
+    const postImageTask = postImageRef.put(this.postImgFile!);
+    projectImagePaths['imgPost'] = postImagePath;
+  
+    console.log("editmode ", this.editMode)
+  
+    // Wait for both image uploads to complete
+    Promise.all([preImageTask, postImageTask])
+      .then(() => {
+        // Add the image paths to the project data
+        Object.assign(projectData, projectImagePaths);
+  
+        // create or update the project in the database
+        let request: Observable<any>;
+        if (this.editMode) {
+          request = this.projectRequestService.updateProject(this.currentProjectId, projectData);
+        } else {
+          request = this.projectRequestService.createProject(projectData);
+        }
+  
+        // Subscribe to the request to update the allProjects array
+        request.subscribe((response: any) => {
+          if (this.editMode) {
+            // Find the project in the allProjects array and update it
+            const index = this.allProjects.findIndex(project => project.id === this.currentProjectId);
+            this.allProjects[index] = response;
+          } else {
+            // Add the new project to the beginning of the allProjects array
+            this.allProjects.unshift(response);
+          }
+  
+          // Reset the form
+          this.form.reset();
+          this.editMode = false;
+          this.preImageSrc = "";
+          this.postImageSrc = "";
         });
-
-      //this.projectRequestService.updateProject(this.currentProjectId, projectFormValue);
-    } else {
-      // Create a new project
-      const projectData = { ...projectFormValue };
-      const projectImagePaths = {};
-      const storageRef = this.storage.ref('project-images');
-
-      // Upload pre-image
-      console.log('filename pre', this.preImgFile)
-      console.log('filename pre', this.preImgFile?.name)
-      const preImageName = `${new Date().getTime()}_${this.preImgFile?.name}`;
-      const preImagePath = `pre/${preImageName}`;
-      const preImageRef = storageRef.child(preImagePath);
-      const preImageTask = preImageRef.put(this.preImgFile!);
-      projectImagePaths['imgPre'] = preImagePath;
-
-      // Upload post-image
-      console.log('filename post', this.preImgFile?.name)
-      const postImageName = `${new Date().getTime()}_${this.postImgFile?.name}`;
-      const postImagePath = `post/${postImageName}`;
-      const postImageRef = storageRef.child(postImagePath);
-      const postImageTask = postImageRef.put(this.postImgFile!);
-      projectImagePaths['imgPost'] = postImagePath;
-
-      // Wait for both image uploads to complete
-      Promise.all([preImageTask, postImageTask])
-        .then(() => {
-          // Add the image paths to the project data
-          Object.assign(projectData, projectImagePaths);
-
-          // Create the project in the database
-          this.projectRequestService.createProject(projectData);
-        });
-    }
-
-    // Reset the form
-    this.form.reset();
+  
+      });
   }
+
+
+  // onProjectCreateOrUpdate(projectFormValue: {
+  //   id: string;
+  //   date: Date;
+  //   object: string;
+  //   model: string;
+  //   title: string;
+  //   description: string;
+  //   technique: string;
+  //   colors: string[];
+  //   price: string;
+  //   imgPre: string;
+  //   imgPost: string;
+  //   altText: string;
+  // }): Observable<any> {
+
+  //     return new Observable(observer => {
+
+  //     // Update an existing project
+  //     const projectData = { ...projectFormValue };
+  //     const projectImagePaths = {};
+  //     const storageRef = this.storage.ref('project-images');
+
+  //     // Upload pre-image
+  //     const preImageName = this.preImgUrl //`${new Date().getTime()}_${this.preImgFile?.name}`;
+  //     const preImagePath = `pre/${preImageName}`;
+  //     const preImageRef = storageRef.child(preImagePath);
+  //     const preImageTask = preImageRef.put(this.preImgFile!);
+  //     projectImagePaths['imgPre'] = preImagePath;
+
+  //     // Upload post-image
+  //     const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
+  //     const postImagePath = `post/${postImageName}`;
+  //     const postImageRef = storageRef.child(postImagePath);
+  //     const postImageTask = postImageRef.put(this.postImgFile!);
+  //     projectImagePaths['imgPost'] = postImagePath;
+
+  //     // Wait for both image uploads to complete
+  //     Promise.all([preImageTask, postImageTask])
+  //       .then(() => {
+  //         // Add the image paths to the project data
+  //         Object.assign(projectData, projectImagePaths);
+
+  //           // Create or update the project in the database
+  //           if (this.editMode) {
+  //             this.projectRequestService.updateProject(this.currentProjectId, projectData)
+  //               .subscribe(updatedProjectData => {
+  //                 // Emit the updated project data to the observer
+  //                 observer.next(updatedProjectData);
+  //                 observer.complete();
+  //               }, error => {
+  //                 // Emit the error to the observer
+  //                 observer.error(error);
+  //               });
+  //           } else {
+  //             this.projectRequestService.createProject(projectData)
+  //               .subscribe(newProjectData => {
+  //                 // Emit the new project data to the observer
+  //                 observer.next(newProjectData);
+  //                 observer.complete();
+  //               }, error => {
+  //                 // Emit the error to the observer
+  //                 observer.error(error);
+  //               });
+  //           }
+          
+  //         }).then(() => {
+  //           this.editMode = false;
+  //           this.fetchProjects();
+  //         }).then(() => {
+  //         // Reset the form
+  //           this.form.reset();
+  //           this.editMode = false;
+  //           this.preImageSrc = ""
+  //           this.postImageSrc = ""
+  //         })
+  //     });
+  // }
+
 
 
 
@@ -186,7 +222,6 @@ export class AdminComponent implements OnInit {
 
   onDeleteAllProjects() {
     this.projectRequestService.deleteAllProjects();
-
   }
 
   // UPDATE using a http request service
@@ -195,7 +230,7 @@ export class AdminComponent implements OnInit {
     this.currentProjectId = id;
     // get the product
     let currentProject = this.allProjects.find((project) => {
-      return project.id.toString() === id
+      return project.id === id
     })
 
     console.log(currentProject)
