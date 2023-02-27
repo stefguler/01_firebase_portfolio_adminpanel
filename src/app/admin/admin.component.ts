@@ -31,6 +31,8 @@ export class AdminComponent implements OnInit {
   postImgUrl: string | null = null;
   preImageSrc: string | undefined;
   postImageSrc: string | undefined;
+  preImgChange: boolean = false;
+  postImgChange: boolean = false;
 
 
   constructor(private projectRequestService: ProjectRequestsService,
@@ -61,20 +63,22 @@ export class AdminComponent implements OnInit {
     altText: string;
   }) {
 
-    // Update an existing project
     const projectData = { ...projectFormValue };
     const projectImagePaths = {};
     const storageRef = this.storage.ref('project-images');
 
     // Upload pre-image
-    const preImageName = this.preImgUrl //`${new Date().getTime()}_${this.preImgFile?.name}`;
-    const preImagePath = `pre/${preImageName}`;
-    const preImageRef = storageRef.child(preImagePath);
-    const preImageTask = preImageRef.put(this.preImgFile!);
-    projectImagePaths['imgPre'] = preImagePath;
+
+      const preImageName = this.preImgUrl
+      const preImagePath = `pre/${preImageName}`;
+      const preImageRef = storageRef.child(preImagePath);
+      const preImageTask = preImageRef.put(this.preImgFile!);
+      projectImagePaths['imgPre'] = preImagePath;
+    
 
     // Upload post-image
-    const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
+    
+    const postImageName = this.postImgUrl
     const postImagePath = `post/${postImageName}`;
     const postImageRef = storageRef.child(postImagePath);
     const postImageTask = postImageRef.put(this.postImgFile!);
@@ -214,27 +218,6 @@ export class AdminComponent implements OnInit {
     this.navigationService.navigateTo(adress)
   }
 
-  //old way without picture upload
-  //   uploadImage(event: any, type: string) {
-  //     const file = event.target.files[0];
-  //     const fileName = `${new Date().getTime()}_${file.name}`;
-  //     const fileRef = this.storage.ref(fileName);
-  //     const task = this.storage.upload(fileName, file);
-
-  //     task.snapshotChanges().pipe(
-  //       finalize(() => {
-  //         fileRef.getDownloadURL().subscribe(url => {
-  //           if (type === 'pre') {
-  //             this.preImgUrl = url;
-  //           } else {
-  //             this.postImgUrl = url;
-  //           }
-  //         });
-  //       })
-  //     ).subscribe();
-  //   }
-
-
   //always have to save the picture in a File before I can use it and on submit send it
   onPreImageChange(event: any) {
     this.preImgFile = event.target.files[0];
@@ -242,9 +225,11 @@ export class AdminComponent implements OnInit {
 
     if (this.preImgFile != undefined) {
       this.loadPreImage();
-      this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`
-      console.log('this.postImgUrl', this.preImgUrl)
-      this.form.controls['imgPre'].setValue(this.preImgUrl)
+      this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`;
+      console.log('this.postImgUrl', this.preImgUrl);
+      this.form.controls['imgPre'].setValue(this.preImgUrl);
+      this.preImgChange = true;
+
     } else {
       this.preImgUrl = undefined
       this.preImageSrc = undefined
@@ -258,9 +243,10 @@ export class AdminComponent implements OnInit {
 
     if (this.postImgFile != undefined) {
       this.loadPostImage();
-      this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`
-      console.log('this.postImgUrl', this.postImgUrl)
-      this.form.controls['imgPost'].setValue(this.postImgUrl)
+      this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`;
+      console.log('this.postImgUrl', this.postImgUrl);
+      this.form.controls['imgPost'].setValue(this.postImgUrl);
+      this.preImgChange = true;
     } else {
       this.postImgUrl = undefined
       this.postImageSrc = undefined
