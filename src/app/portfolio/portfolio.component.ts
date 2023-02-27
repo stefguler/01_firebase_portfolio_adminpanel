@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Project } from '../models/project';
 import { NavigationService } from '../services/navigation.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 
 @Component({
@@ -17,9 +18,13 @@ export class PortfolioComponent implements OnInit {
   editMode: boolean = false;
   errorMessage: string = null;
   errorSub: Subscription;
+  postImageSrc: string | undefined;
 
   
-  constructor(private navigationService: NavigationService, private projectsRequestService: ProjectRequestsService) {
+  constructor(
+    private navigationService: NavigationService,
+     private projectsRequestService: ProjectRequestsService,
+     private storage: AngularFireStorage) {
   }
 
   ngOnInit(): void {
@@ -42,6 +47,16 @@ export class PortfolioComponent implements OnInit {
     this.isFetching = true;
     this.projectsRequestService.fetchProjects().subscribe((response) => {
       this.allProjects = response;
+      this.allProjects.map((project) => {
+
+        const storageRef = this.storage.ref(`project-images/${project.imgPost}`)
+        storageRef.getDownloadURL().subscribe((url) => {
+          project['dlImgSrc'] = this.postImageSrc = url;
+        });
+
+
+      })
+
       this.isFetching = false;
     }, (err) => {
       this.errorMessage = err.message

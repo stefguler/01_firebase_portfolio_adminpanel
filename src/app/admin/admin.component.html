@@ -16,10 +16,10 @@
           <input type="date" name="date" ngModel>
 
           <label>Project Object</label>
-          <input type="string" name="object" ngModel> <!--selector-->
+          <input type="text" name="object" ngModel> <!--selector-->
       
           <label>Project Model</label>
-          <input type="string" name="model" ngModel> 
+          <input type="text" name="model" ngModel> 
 
           <label>Project Description</label>
           <input type="text" name="description" ngModel>
@@ -31,19 +31,23 @@
           <input type="text" name="colors" ngModel>
 
           <label>Project Price</label>
-          <input type="string" name="price" ngModel>
+          <input type="text" name="price" ngModel>
       
           <label>Project Pre Image</label>
           <input type="file" (change)="onPreImageChange($event)" name="Preimage" required>
           <img [src]="preImageSrc" *ngIf="preImageSrc" style="width: 10rem">
-          <input type="string" name="imgPre" ngModel>
+          <img src="../../assets/images/noimage.webp" *ngIf="!preImageSrc" style="width: 10rem">
+          <input type="text" name="imgPre" ngModel>
+
           
           <label>Project Post Image</label>
           <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
           <img [src]="postImageSrc" *ngIf="postImageSrc"  style="width: 10rem">
-          <input type="string" name="imgPost" ngModel>
+          <img src="../../assets/images/noimage.webp" *ngIf="!postImageSrc" style="width: 10rem">
+          <input type="text" name="imgPost" ngModel>
         
           <input type="submit" value="{{editMode ? 'Update Project' : 'Add Project'}}" >
+          <input type="button" *ngIf="editMode" value="Cancel" (click)="onCancelEditMode()">
         </form>
       </div>
 

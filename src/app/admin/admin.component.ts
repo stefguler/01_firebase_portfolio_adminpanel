@@ -6,10 +6,9 @@ import { ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { ProjectRequestsService } from '../services/project-requests.service';
 
-import { AngularFireStorage, AngularFireStorageReference } from '@angular/fire/compat/storage';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import 'firebase/compat/storage';
-import firebase from 'firebase/compat/app';
-import { Observable, } from 'rxjs';
+import { forkJoin, Observable, } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -82,9 +81,16 @@ export class AdminComponent implements OnInit {
     projectImagePaths['imgPost'] = postImagePath;
 
     // create alt Text
-    const altText = `${projectData.title}: Ein ${projectData.model} ${projectData.object} nach dem Einsatz von ${projectData.technique}`
+    const altText = `
+      ${projectData.title}: 
+      Ein ${projectData.model} 
+      ${projectData.object} nach dem 
+      Einsatz von ${projectData.technique}`
+
     projectData['altText'] = altText;
 
+    // Initialize the request variable
+    let request: Observable<any>;
 
     // Wait for both image uploads to complete
     Promise.all([preImageTask, postImageTask])
@@ -93,119 +99,34 @@ export class AdminComponent implements OnInit {
         Object.assign(projectData, projectImagePaths);
 
         // create or update the project in the database
-        let request: Observable<any>;
+        const downloadPreImage$ = this.storage.ref(`project-images/${projectData.imgPre}`).getDownloadURL();
+        const downloadPostImage$ = this.storage.ref(`project-images/${projectData.imgPost}`).getDownloadURL();
 
-        if (this.editMode) {
-          request = this.projectRequestService.updateProject(this.currentProjectId, projectData);
-        } else {
-          console.log('here is the project data before create trigger: ', projectData)
-          request = this.projectRequestService.createProject(projectData);
-        }
+        forkJoin([downloadPreImage$, downloadPostImage$]).subscribe((urls: string[]) => {
+          projectData.imgPre = urls[0];
+          projectData.imgPost = urls[1];
 
-        // Subscribe to the request to update the allProjects array
-        request.subscribe((response: any) => {
-          if (this.editMode) {
-            // Find the project in the allProjects array and update it
-            const index = this.allProjects.findIndex(project => project.id === this.currentProjectId);
-            this.allProjects[index] = response;
-          } else {
-            // Add the new project to the beginning of the allProjects array
-            this.allProjects.unshift(response);
-          }
+          (this.editMode) ? request = this.projectRequestService.updateProject(this.currentProjectId, projectData) :
+            request = this.projectRequestService.createProject(projectData);
+          // console.log('request', request);
 
-          // Reset the form
-          this.form.reset();
-          this.editMode = false;
-          this.preImageSrc = "";
-          this.postImageSrc = "";
-          this.preImgFile = null;
-          this.postImgFile = null;
-          this.preImgUrl = null;
-          this.postImgUrl = null;
+          // Subscribe to the request to update the allProjects array
+          request.subscribe((response: any) => {
+            if (this.editMode) {
+              // Find the project in the allProjects array and update it
+              const index = this.allProjects.findIndex(project => project.id === this.currentProjectId);
+              this.allProjects[index] = response;
+            } else {
+              // Add the new project to the beginning of the allProjects array
+              this.allProjects.unshift(response);
+            }
+            // Reset the form
+            this.resetPageData();
+          });
         });
-
-      });
+      }
+      );
   }
-
-
-  // onProjectCreateOrUpdate(projectFormValue: {
-  //   id: string;
-  //   date: Date;
-  //   object: string;
-  //   model: string;
-  //   title: string;
-  //   description: string;
-  //   technique: string;
-  //   colors: string[];
-  //   price: string;
-  //   imgPre: string;
-  //   imgPost: string;
-  //   altText: string;
-  // }): Observable<any> {
-
-  //     return new Observable(observer => {
-
-  //     // Update an existing project
-  //     const projectData = { ...projectFormValue };
-  //     const projectImagePaths = {};
-  //     const storageRef = this.storage.ref('project-images');
-
-  //     // Upload pre-image
-  //     const preImageName = this.preImgUrl //`${new Date().getTime()}_${this.preImgFile?.name}`;
-  //     const preImagePath = `pre/${preImageName}`;
-  //     const preImageRef = storageRef.child(preImagePath);
-  //     const preImageTask = preImageRef.put(this.preImgFile!);
-  //     projectImagePaths['imgPre'] = preImagePath;
-
-  //     // Upload post-image
-  //     const postImageName = this.postImgUrl //`${new Date().getTime()}_${this.postImgFile?.name}`;
-  //     const postImagePath = `post/${postImageName}`;
-  //     const postImageRef = storageRef.child(postImagePath);
-  //     const postImageTask = postImageRef.put(this.postImgFile!);
-  //     projectImagePaths['imgPost'] = postImagePath;
-
-  //     // Wait for both image uploads to complete
-  //     Promise.all([preImageTask, postImageTask])
-  //       .then(() => {
-  //         // Add the image paths to the project data
-  //         Object.assign(projectData, projectImagePaths);
-
-  //           // Create or update the project in the database
-  //           if (this.editMode) {
-  //             this.projectRequestService.updateProject(this.currentProjectId, projectData)
-  //               .subscribe(updatedProjectData => {
-  //                 // Emit the updated project data to the observer
-  //                 observer.next(updatedProjectData);
-  //                 observer.complete();
-  //               }, error => {
-  //                 // Emit the error to the observer
-  //                 observer.error(error);
-  //               });
-  //           } else {
-  //             this.projectRequestService.createProject(projectData)
-  //               .subscribe(newProjectData => {
-  //                 // Emit the new project data to the observer
-  //                 observer.next(newProjectData);
-  //                 observer.complete();
-  //               }, error => {
-  //                 // Emit the error to the observer
-  //                 observer.error(error);
-  //               });
-  //           }
-
-  //         }).then(() => {
-  //           this.editMode = false;
-  //           this.fetchProjects();
-  //         }).then(() => {
-  //         // Reset the form
-  //           this.form.reset();
-  //           this.editMode = false;
-  //           this.preImageSrc = ""
-  //           this.postImageSrc = ""
-  //         })
-  //     });
-  // }
-
 
 
 
@@ -261,59 +182,8 @@ export class AdminComponent implements OnInit {
       return project.id === id
     })
 
-
-    //handle images
-    console.log(currentProject.imgPre)
-    console.log(currentProject.imgPost)
-
-    if (currentProject.imgPre != 'pre/null') {
-      const storageRef = this.storage.ref(`project-images/${currentProject.imgPre}`);
-      storageRef.getDownloadURL().subscribe((url) => {
-        // Use the url to display the image in your HTML view
-        console.log(url)
-        this.preImageSrc = url;
-      });
-    } else {
-      this.preImageSrc = '/assets/images/noimage.webg'
-    }
-
-    
-    if (currentProject.imgPost != 'post/null') {
-      const storageRef = this.storage.ref(`project-images/${currentProject.imgPost}`);
-      storageRef.getDownloadURL().subscribe((url) => {
-        // Use the url to display the image in your HTML view
-        console.log(url)
-        this.postImageSrc = url;
-      });
-    } else {
-      console.log('was hit!')
-      this.postImageSrc = '/assets/images/noimage.webp'
-      console.log('this port img src', this.postImageSrc)
-    }
-
-
-    // const storageRefimgPre = this.storage.ref(`project-images/${currentProject.imgPre}`);
-    // const storageRefimgPost = this.storage.ref(`project-images/${currentProject.imgPost}`);
-    // // const imgPreRef = storageRef.child(currentProject.imgPre); 
-
-    // storageRefimgPre.getDownloadURL().subscribe((url) => {
-    //   // Use the url to display the image in your HTML view
-    //   console.log(url)
-    //   this.preImageSrc = url;
-    // });
-
-    // storageRefimgPost.getDownloadURL().subscribe((url) => {
-    //   // Use the url to display the image in your HTML view
-    //   console.log(url)
-    //   this.postImageSrc = url;
-    // });
- 
-
-
-    //reset the pre and post imgs preview
-    this.preImageSrc = ""
-    this.postImageSrc = ""
-
+    this.preImageSrc = currentProject.imgPre
+    this.postImageSrc = currentProject.imgPost
 
     //fill the form with product details
     this.form.setValue({
@@ -331,6 +201,12 @@ export class AdminComponent implements OnInit {
 
     //change value from "Add Product" - button to "Update Product" Button
     this.editMode = true;
+
+  }
+
+  onCancelEditMode() {
+    this.editMode = false;
+    this.resetPageData()
 
   }
 
@@ -362,17 +238,34 @@ export class AdminComponent implements OnInit {
   //always have to save the picture in a File before I can use it and on submit send it
   onPreImageChange(event: any) {
     this.preImgFile = event.target.files[0];
-    this.loadPreImage();
-    this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`
-    this.form.controls['imgPre'].setValue(`${new Date().getTime()}_${this.preImgFile?.name}`)
+    console.log(this.preImgFile)
+
+    if (this.preImgFile != undefined) {
+      this.loadPreImage();
+      this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`
+      console.log('this.postImgUrl', this.preImgUrl)
+      this.form.controls['imgPre'].setValue(this.preImgUrl)
+    } else {
+      this.preImgUrl = undefined
+      this.preImageSrc = undefined
+      this.form.controls['imgPre'].setValue('')
+    }
   }
 
   //always have to save the picture in a File before I can use it and on submit send it
   onPostImageChange(event: any) {
     this.postImgFile = event.target.files[0];
-    this.loadPostImage();
-    this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`
-    this.form.controls['imgPost'].setValue(`${new Date().getTime()}_${this.postImgFile?.name}`)
+
+    if (this.postImgFile != undefined) {
+      this.loadPostImage();
+      this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`
+      console.log('this.postImgUrl', this.postImgUrl)
+      this.form.controls['imgPost'].setValue(this.postImgUrl)
+    } else {
+      this.postImgUrl = undefined
+      this.postImageSrc = undefined
+      this.form.controls['imgPost'].setValue('')
+    }
   }
 
   loadPreImage() {
@@ -389,6 +282,17 @@ export class AdminComponent implements OnInit {
       this.postImageSrc = event.target.result;
     };
     reader.readAsDataURL(this.postImgFile);
+  }
+
+  resetPageData() {
+    this.form.reset();
+    this.editMode = false;
+    this.preImageSrc = "";
+    this.postImageSrc = "";
+    this.preImgFile = null;
+    this.postImgFile = null;
+    this.preImgUrl = null;
+    this.postImgUrl = null;
   }
 
 }
