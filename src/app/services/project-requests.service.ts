@@ -26,8 +26,10 @@ export class ProjectRequestsService {
     technique: string;
     colors: string[];
     price: string;
-    imgPre: string;
-    imgPost: string;
+    imgPreName: string;
+    imgPreSrc: string;
+    imgPostName: string;
+    imgPostSrc: string;
     altText: string;
   }): Observable<Project> {
     return this.http.post<{name: string}>(`${this.url}.json`, project).pipe(

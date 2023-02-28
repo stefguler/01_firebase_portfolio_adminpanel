@@ -8,7 +8,9 @@ export class Project {
   technique: string;
   colors: string[];
   price: string;
-  imgPre: string;
-  imgPost: string;
+  imgPreName: string;
+  imgPreSrc: string;
+  imgPostName: string;
+  imgPostSrc: string;
   altText: string;
 }
