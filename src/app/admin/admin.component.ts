@@ -33,8 +33,8 @@ export class AdminComponent implements OnInit {
   postImageSrc: string | undefined;
   preImgChange: boolean = false;
   postImgChange: boolean = false;
-  preImgNameDelete: string;
-  postImgNameDelete: string;
+  preImgName: string;
+  postImgName: string;
   preImgDeleted: boolean = false;
   postImgDeleted: boolean = false;
 
@@ -88,7 +88,7 @@ export class AdminComponent implements OnInit {
       imageUploadPromises.push(preImageTask);
       // delete the current pre image if it exists
       if (projectFormValue.imgPostSrc) {
-        const preImageToDelete = this.storage.ref(`project-images/${this.preImgNameDelete}`);
+        const preImageToDelete = this.storage.ref(`project-images/${this.preImgName}`);
         preImageToDelete.delete().subscribe();
       }
     }
@@ -104,7 +104,7 @@ export class AdminComponent implements OnInit {
         imageUploadPromises.push(postImageTask);
         // delete the current post image if it exists
         if (projectFormValue.imgPostSrc) {
-          const postImageToDelete = this.storage.ref(`project-images/${this.postImgNameDelete}`);
+          const postImageToDelete = this.storage.ref(`project-images/${this.postImgName}`);
           postImageToDelete.delete().subscribe();
         }
       }
@@ -267,7 +267,7 @@ export class AdminComponent implements OnInit {
       this.loadPreImage();
       this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`;
       console.log('this.postImgUrl', this.preImgUrl);
-      this.preImgNameDelete = this.form.value.imgPreName
+      this.preImgName = this.form.value.imgPreName
       this.form.controls['imgPreName'].setValue(this.preImgUrl);
       this.preImgChange = true;
       console.log(' this onPreImgChange after upload, value was not undefined: ', this.preImgFile)
@@ -288,7 +288,7 @@ export class AdminComponent implements OnInit {
       this.loadPostImage();
       this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`;
       console.log('this.postImgUrl', this.postImgUrl);
-      this.postImgNameDelete = this.form.value.imgPostName;
+      this.postImgName = this.form.value.imgPostName;
       this.form.controls['imgPostName'].setValue(this.postImgUrl);
       this.preImgChange = true;
     } else {

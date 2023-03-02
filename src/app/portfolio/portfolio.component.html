@@ -18,7 +18,7 @@
     </div> -->
       
   <button class="admin" (click)="navigate('admin')">Go to Admin Panel</button>
-
+<div>Project Count: {{allProjects.length}}</div>
   <ngb-carousel [interval]="4000" [wrap]="true">
     <ng-template ngbSlide *ngFor="let project of allProjects">
       <div class="project-container" style="display:flex; flex-direction: columns; justify-content: center; align-items: center;" (click)="navigateToProject(project.id.toString())">
