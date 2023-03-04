@@ -43,6 +43,7 @@
           
           <label>Project Post Image</label>
           <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
+          <input type="button" (change)="deleteImage($event)" name="PostimageDelete" value="Delete Image">
           <img [src]="postImageSrc" *ngIf="postImageSrc"  style="width: 10rem">
           <img src="../../assets/images/noimage.webp" *ngIf="!preImageSrc" style="width: 10rem">
           <input type="text" name="imgPostSrc" ngModel>

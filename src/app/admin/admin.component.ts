@@ -31,13 +31,8 @@ export class AdminComponent implements OnInit {
   postImgUrl: string | null = null;
   preImageSrc: string | undefined;
   postImageSrc: string | undefined;
-  preImgChange: boolean = false;
-  postImgChange: boolean = false;
   preImgName: string;
   postImgName: string;
-  preImgDeleted: boolean = false;
-  postImgDeleted: boolean = false;
-
 
 
   constructor(private projectRequestService: ProjectRequestsService,
@@ -74,12 +69,10 @@ export class AdminComponent implements OnInit {
     const projectImagePaths = {};
     const storageRef = this.storage.ref('project-images');
 
-    console.log(' this preImgFile in submit: ', this.preImgFile)
     const imageUploadPromises = [];
  
     // Upload pre-image
     if (this.preImgFile) {
-      console.log('pre image triggered')
       const preImageName = this.preImgUrl
       const preImagePath = `pre/${preImageName}`;
       const preImageRef = storageRef.child(preImagePath);
@@ -95,7 +88,6 @@ export class AdminComponent implements OnInit {
     
           // Upload post-image
       if (this.postImgFile) {
-        console.log('post image triggered')
         const postImageName = this.postImgUrl
         const postImagePath = `post/${postImageName}`;
         const postImageRef = storageRef.child(postImagePath);
@@ -108,6 +100,8 @@ export class AdminComponent implements OnInit {
           postImageToDelete.delete().subscribe();
         }
       }
+
+      //Check image deletion tasks:
     
 
     // create alt Text
@@ -126,7 +120,6 @@ export class AdminComponent implements OnInit {
     
     Promise.all(imageUploadPromises)
       .then(() => {
-        console.log('prmise triggered')
         // Add the image paths to the project data
         Object.assign(projectData, projectImagePaths);
 
@@ -258,25 +251,22 @@ export class AdminComponent implements OnInit {
 
   //always have to save the picture in a File before I can use it and on submit send it
   onPreImageChange(event: any) {
-    console.log(' this onPreImgChange before upload: ', this.preImgFile)
 
     this.preImgFile = event.target.files[0];
-    console.log(this.preImgFile)
 
     if (this.preImgFile != undefined) {
       this.loadPreImage();
       this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`;
+      console.log('preImgFile != undefined hit')
       console.log('this.postImgUrl', this.preImgUrl);
       this.preImgName = this.form.value.imgPreName
       this.form.controls['imgPreName'].setValue(this.preImgUrl);
-      this.preImgChange = true;
-      console.log(' this onPreImgChange after upload, value was not undefined: ', this.preImgFile)
 
     } else {
+      console.log('preImgFile === undefined hit')
       this.preImgUrl = undefined
       this.preImageSrc = undefined
       this.form.controls['imgPreName'].setValue('')
-      console.log(' this onPreImgChange after upload, value was undefined: ', this.preImgFile)
     }
   }
 
@@ -285,17 +275,25 @@ export class AdminComponent implements OnInit {
     this.postImgFile = event.target.files[0];
 
     if (this.postImgFile != undefined) {
+      console.log('postImgFile != undefined hit')
       this.loadPostImage();
       this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`;
       console.log('this.postImgUrl', this.postImgUrl);
       this.postImgName = this.form.value.imgPostName;
       this.form.controls['imgPostName'].setValue(this.postImgUrl);
-      this.preImgChange = true;
     } else {
+      console.log('postImgFile === undefined hit')
       this.postImgUrl = undefined
       this.postImageSrc = undefined
       this.form.controls['imgPostName'].setValue('')
     }
+  }
+
+
+  deleteImage(deleteEvent: Event) {
+    const fileToDelete = this.storage.ref(`project-images/${deleteEvent.target}`);
+    fileToDelete.delete().subscribe();
+    console.log(`file: ${deleteEvent} pre img was deleted`)
   }
 
   loadPreImage() {
