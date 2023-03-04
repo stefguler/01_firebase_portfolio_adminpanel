@@ -37,15 +37,16 @@
           <input type="file" (change)="onPreImageChange($event)" name="Preimage" required>
           <img [src]="preImageSrc" *ngIf="preImageSrc" style="width: 10rem">
           <img src="../../assets/images/noimage.webp" *ngIf="!preImageSrc" style="width: 10rem">
+          <input type="button" *ngIf="editMode && preImageSrc" (click)="deleteImage($event)" name="preImageDelete" value="Delete Image">
           <input type="text" name="imgPreSrc" ngModel>
           <input type="text" name="imgPreName" ngModel>
 
           
           <label>Project Post Image</label>
           <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
-          <input type="button" (change)="deleteImage($event)" name="PostimageDelete" value="Delete Image">
           <img [src]="postImageSrc" *ngIf="postImageSrc"  style="width: 10rem">
-          <img src="../../assets/images/noimage.webp" *ngIf="!preImageSrc" style="width: 10rem">
+          <img src="../../assets/images/noimage.webp" *ngIf="!postImageSrc" style="width: 10rem">
+          <input type="button" *ngIf="editMode && postImageSrc" (click)="deleteImage($event)" name="postImageDelete" value="Delete Image" >
           <input type="text" name="imgPostSrc" ngModel>
           <input type="text" name="imgPostName" ngModel>
         

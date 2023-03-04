@@ -290,10 +290,33 @@ export class AdminComponent implements OnInit {
   }
 
 
-  deleteImage(deleteEvent: Event) {
-    const fileToDelete = this.storage.ref(`project-images/${deleteEvent.target}`);
+  deleteImage(imgEvent: any) {
+    
+    let fileName: string = '';
+    console.log(imgEvent.target.name)
+
+    if (imgEvent.target.name === "preImageDelete") {
+      fileName = this.form.value.imgPreName
+      this.preImgFile = null
+      this.preImageSrc = "";
+      this.preImgUrl = null;
+      console.log("preImgName selected: ", fileName)
+    } 
+    else if (imgEvent.target.name === "postImageDelete") {
+      fileName = this.form.value.imgPostName
+      this.postImgFile = null
+      this.postImageSrc = "";
+      this.postImgUrl = null;
+      console.log("postImgName selected: ", fileName)
+    }
+    else {
+      console.log('Something went wrong with filepick')
+    }
+
+    console.log('file reference: ', `project-images/${fileName}`)
+    const fileToDelete = this.storage.ref(`project-images/${fileName}`);
     fileToDelete.delete().subscribe();
-    console.log(`file: ${deleteEvent} pre img was deleted`)
+    console.log(`file: ${fileName} pre img was deleted`)
   }
 
   loadPreImage() {
