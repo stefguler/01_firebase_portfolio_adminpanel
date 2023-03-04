@@ -143,7 +143,6 @@ export class AdminComponent implements OnInit {
 
           (this.editMode) ? request = this.projectRequestService.updateProject(this.currentProjectId, projectData) :
             request = this.projectRequestService.createProject(projectData);
-          // console.log('request', request);
 
           // Subscribe to the request to update the allProjects array
           request.subscribe((response: any) => {
@@ -195,12 +194,13 @@ export class AdminComponent implements OnInit {
   }
 
   onDeleteAllProjects() {
-    // this.projectRequestService.deleteAllProjects().subscribe(() => {
-    //   this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
-    //     this.allProjects = projects;
-    //   });
-    // });
+    this.projectRequestService.deleteAllProjects().subscribe(() => {
+      this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
+        this.allProjects = projects;
+      });
+    });
 
+    //clear the storage from the pictures
     this.deleteAllImages();
 
   }
@@ -261,13 +261,10 @@ export class AdminComponent implements OnInit {
     if (this.preImgFile != undefined) {
       this.loadPreImage();
       this.preImgUrl = `${new Date().getTime()}_${this.preImgFile?.name}`;
-      console.log('preImgFile != undefined hit')
-      console.log('this.postImgUrl', this.preImgUrl);
       this.preImgName = this.form.value.imgPreName
       this.form.controls['imgPreName'].setValue(this.preImgUrl);
 
     } else {
-      console.log('preImgFile === undefined hit')
       this.preImgUrl = undefined
       this.preImageSrc = undefined
       this.form.controls['imgPreName'].setValue('')
@@ -279,14 +276,11 @@ export class AdminComponent implements OnInit {
     this.postImgFile = event.target.files[0];
 
     if (this.postImgFile != undefined) {
-      console.log('postImgFile != undefined hit')
       this.loadPostImage();
       this.postImgUrl = `${new Date().getTime()}_${this.postImgFile?.name}`;
-      console.log('this.postImgUrl', this.postImgUrl);
       this.postImgName = this.form.value.imgPostName;
       this.form.controls['imgPostName'].setValue(this.postImgUrl);
     } else {
-      console.log('postImgFile === undefined hit')
       this.postImgUrl = undefined
       this.postImageSrc = undefined
       this.form.controls['imgPostName'].setValue('')
@@ -296,30 +290,27 @@ export class AdminComponent implements OnInit {
   deleteSingleImage(imgEvent: any) {
 
     let fileName: string = '';
-    console.log(imgEvent.target.name)
 
     if (imgEvent.target.name === "preImageDelete") {
       fileName = this.form.value.imgPreName
       this.preImgFile = null
       this.preImageSrc = "";
       this.preImgUrl = null;
-      console.log("preImgName selected: ", fileName)
+      this.form.controls['imgPreSrc'].setValue('');
+      this.form.controls['imgPreName'].setValue('');
     }
     else if (imgEvent.target.name === "postImageDelete") {
       fileName = this.form.value.imgPostName
       this.postImgFile = null
       this.postImageSrc = "";
       this.postImgUrl = null;
-      console.log("postImgName selected: ", fileName)
+      this.form.controls['imgPostSrc'].setValue('');
+      this.form.controls['imgPostName'].setValue('');
     }
     else {
-      console.log('Something went wrong with filepick')
     }
-
-    console.log('file reference: ', `project-images/${fileName}`)
     const fileToDelete = this.storage.ref(`project-images/${fileName}`);
     fileToDelete.delete().subscribe();
-    console.log(`file: ${fileName} pre img was deleted`)
   }
 
   deleteAllImages() {
@@ -337,15 +328,9 @@ export class AdminComponent implements OnInit {
       listObservable.toPromise().then((listResult: ListResult) => {
         listResult.items.forEach((itemRef) => {
           // Delete each file in the folder
-          itemRef.delete().then(() => {
-            console.log('File deleted successfully');
-          }).catch((error) => {
-            console.log('Error deleting file: ', error);
-          });
+          itemRef.delete()
         });
-      }).catch((error) => {
-        console.log('Error listing files in folder: ', error);
-      });
+      })
     })
 
   }
