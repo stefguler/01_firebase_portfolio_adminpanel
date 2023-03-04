@@ -8,7 +8,8 @@ import { ProjectRequestsService } from '../services/project-requests.service';
 
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import 'firebase/compat/storage';
-import { forkJoin, Observable, of, } from 'rxjs';
+import { forkJoin, from, Observable, of, } from 'rxjs';
+import { ListResult } from '@firebase/storage-types';
 
 @Component({
   selector: 'app-admin',
@@ -70,7 +71,7 @@ export class AdminComponent implements OnInit {
     const storageRef = this.storage.ref('project-images');
 
     const imageUploadPromises = [];
- 
+
     // Upload pre-image
     if (this.preImgFile) {
       const preImageName = this.preImgUrl
@@ -85,24 +86,24 @@ export class AdminComponent implements OnInit {
         preImageToDelete.delete().subscribe();
       }
     }
-    
-          // Upload post-image
-      if (this.postImgFile) {
-        const postImageName = this.postImgUrl
-        const postImagePath = `post/${postImageName}`;
-        const postImageRef = storageRef.child(postImagePath);
-        const postImageTask = postImageRef.put(this.postImgFile!);
-        projectImagePaths['imgPostName'] = postImagePath;
-        imageUploadPromises.push(postImageTask);
-        // delete the current post image if it exists
-        if (projectFormValue.imgPostSrc) {
-          const postImageToDelete = this.storage.ref(`project-images/${this.postImgName}`);
-          postImageToDelete.delete().subscribe();
-        }
-      }
 
-      //Check image deletion tasks:
-    
+    // Upload post-image
+    if (this.postImgFile) {
+      const postImageName = this.postImgUrl
+      const postImagePath = `post/${postImageName}`;
+      const postImageRef = storageRef.child(postImagePath);
+      const postImageTask = postImageRef.put(this.postImgFile!);
+      projectImagePaths['imgPostName'] = postImagePath;
+      imageUploadPromises.push(postImageTask);
+      // delete the current post image if it exists
+      if (projectFormValue.imgPostSrc) {
+        const postImageToDelete = this.storage.ref(`project-images/${this.postImgName}`);
+        postImageToDelete.delete().subscribe();
+      }
+    }
+
+    //Check image deletion tasks:
+
 
     // create alt Text
     const altText = `
@@ -117,7 +118,7 @@ export class AdminComponent implements OnInit {
     let request: Observable<any>;
 
     // Wait for both image uploads to complete
-    
+
     Promise.all(imageUploadPromises)
       .then(() => {
         // Add the image paths to the project data
@@ -194,11 +195,14 @@ export class AdminComponent implements OnInit {
   }
 
   onDeleteAllProjects() {
-    this.projectRequestService.deleteAllProjects().subscribe(() => {
-      this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
-        this.allProjects = projects;
-      });
-    });
+    // this.projectRequestService.deleteAllProjects().subscribe(() => {
+    //   this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
+    //     this.allProjects = projects;
+    //   });
+    // });
+
+    this.deleteAllImages();
+
   }
 
   //old way
@@ -289,9 +293,8 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  deleteSingleImage(imgEvent: any) {
 
-  deleteImage(imgEvent: any) {
-    
     let fileName: string = '';
     console.log(imgEvent.target.name)
 
@@ -301,7 +304,7 @@ export class AdminComponent implements OnInit {
       this.preImageSrc = "";
       this.preImgUrl = null;
       console.log("preImgName selected: ", fileName)
-    } 
+    }
     else if (imgEvent.target.name === "postImageDelete") {
       fileName = this.form.value.imgPostName
       this.postImgFile = null
@@ -317,6 +320,34 @@ export class AdminComponent implements OnInit {
     const fileToDelete = this.storage.ref(`project-images/${fileName}`);
     fileToDelete.delete().subscribe();
     console.log(`file: ${fileName} pre img was deleted`)
+  }
+
+  deleteAllImages() {
+
+    const folderList = ["pre", "post"]
+
+    folderList.forEach((folderItem) => {
+
+      const folderRef = this.storage.ref(`/project-images/${folderItem}`)
+
+      // Use the 'listAll' method to get a list of all files in the folder
+      const listObservable = from(folderRef.listAll());
+
+      // Convert the Observable to a Promise using 'toPromise' method
+      listObservable.toPromise().then((listResult: ListResult) => {
+        listResult.items.forEach((itemRef) => {
+          // Delete each file in the folder
+          itemRef.delete().then(() => {
+            console.log('File deleted successfully');
+          }).catch((error) => {
+            console.log('Error deleting file: ', error);
+          });
+        });
+      }).catch((error) => {
+        console.log('Error listing files in folder: ', error);
+      });
+    })
+
   }
 
   loadPreImage() {
