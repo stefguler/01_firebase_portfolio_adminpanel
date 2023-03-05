@@ -10,6 +10,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import 'firebase/compat/storage';
 import { forkJoin, from, Observable, of, } from 'rxjs';
 import { ListResult } from '@firebase/storage-types';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -44,7 +45,8 @@ export class AdminComponent implements OnInit {
 
   constructor(private projectRequestService: ProjectRequestsService,
     private navigationService: NavigationService,
-    private storage: AngularFireStorage) {
+    private storage: AngularFireStorage,
+    ) {
 
       this.currentProject = {
         id: '', date: null, object: '', model: '', title: '', description: '', technique: '',

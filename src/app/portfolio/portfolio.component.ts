@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Project } from '../models/project';
 import { NavigationService } from '../services/navigation.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -20,7 +21,10 @@ export class PortfolioComponent implements OnInit {
   postImageSrc: string | undefined;
 
   
-  constructor(private navigationService: NavigationService, private projectsRequestService: ProjectRequestsService) {
+  constructor(
+    private navigationService: NavigationService, 
+    private projectsRequestService: ProjectRequestsService,
+    private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -51,6 +55,10 @@ export class PortfolioComponent implements OnInit {
     }, (err) => {
       this.errorMessage = err.message
     })
+  }
+
+  logOut() {
+    this.authService.signOut();
   }
 
 }

@@ -40,6 +40,44 @@ export class ProjectRequestsService {
     );
   }
 
+
+  // adding headers Authorization
+  // createProject(project: {
+  //   id: string;
+  //   date: Date;
+  //   object: string;
+  //   model: string;
+  //   title: string;
+  //   description: string;
+  //   technique: string;
+  //   colors: string[];
+  //   price: string;
+  //   imgPreName: string;
+  //   imgPreSrc: string;
+  //   imgPostName: string;
+  //   imgPostSrc: string;
+  //   altText: string;
+  // }): Observable<Project> {
+  //   return this.authService.getAuthToken().pipe(
+  //     switchMap((authToken: string) => {
+  //       const httpOptions = {
+  //         headers: new HttpHeaders({
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${authToken}`
+  //         })
+  //       };
+  //       return this.http.post<{name: string}>(`${this.url}.json`, project, httpOptions).pipe(
+  //         map(res => {
+  //           const newProject: Project = {...project, id: res.name};
+  //           return newProject;
+  //         })
+  //       );
+  //     })
+  //   );
+  // }
+
+
+
   //old way
   // createProject(project: {
   //   id: string;
