@@ -1,0 +1,13 @@
+<div class="container" id="container">
+	<div class="form-container sign-in-container">
+		<form #pwreset ="ngForm" (ngSubmit)="onSubmit(pwreset.value)">
+			<h1>Password reset</h1>
+			<span>Tell us the email adress you wish the password beeing reset</span>
+			<input type="email" name="email" placeholder="Email" ngModel/>
+            <div class="btn-div">
+                <button type="submit">Sign Up</button>
+                <button (click)="onCancel()">Cancel</button>
+            </div>
+		</form>
+	</div>
+</div>

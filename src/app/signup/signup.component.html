@@ -1,0 +1,14 @@
+<div class="container" id="container">
+    <div class="form-container sign-up-container">
+        <form #signUp="ngForm" (ngSubmit)="onSignUpSubmit(signUp.value)">
+            <h1>Create Account</h1>
+            <span>Set your email and password for registration</span>
+            <input type="email" name="email" placeholder="Email" ngModel />
+            <input type="password" name="password" placeholder="Password" ngModel />
+            <div class="btn-div">
+                <button type="submit">Sign Up</button>
+                <button (click)="onCancel()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -23,8 +23,12 @@ import {HttpClientModule} from '@angular/common/http';
 //auth
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
+import { PwResetComponent } from './pw-reset/pw-reset.component';
+
 
 //icons
+
 
 @NgModule({
   declarations: [
@@ -32,7 +36,9 @@ import { LoginComponent } from './login/login.component';
     PortfolioComponent,
     ProjectsComponent,
     AdminComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent,
+    PwResetComponent
   ],
   imports: [
     BrowserModule,

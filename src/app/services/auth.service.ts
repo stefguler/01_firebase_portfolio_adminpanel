@@ -1,7 +1,6 @@
 import { NavigationService } from './navigation.service';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
 import { from, of, take, switchMap, Observable } from 'rxjs';
 
 @Injectable({
@@ -13,9 +12,11 @@ export class AuthService {
     private auth: AngularFireAuth,
     private navigateService: NavigationService) { }
 
+    
+
 
   signUp(email: string, password: string) {
-  this.auth.createUserWithEmailAndPassword(email, password)
+    this.auth.createUserWithEmailAndPassword(email, password)
       .then(() => {
         // Handle successful sign-up
         this.navigateService.navigateTo('admin')
@@ -24,37 +25,40 @@ export class AuthService {
         // Handle sign-up error
         console.log(`sign up error as: ${error}`)
       });
-    }
+  }
 
   signIn(email: string, password: string) {
     this.auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      // Handle successful sign-in
-      this.navigateService.navigateTo('admin')
+      .then((res) => {
+        // Handle successful sign-in
+        console.log('res', res)
+        this.navigateService.navigateTo('admin')
 
-    })
-    .catch(error => {
-      // Handle sign-in error
-      console.log(`sign in error as: ${error}`)
-    });
+      })
+      .catch(error => {
+        // Handle sign-in error
+        console.log(`sign in error as: ${error}`)
+      });
   }
 
   signOut() {
     this.auth.signOut()
-    .then(() => {
-      // Handle successful sign-out
-      this.navigateService.navigateTo('')
-    })
-    .catch(error => {
-      // Handle sign-out error
-      console.log(`sign out error as: ${error}`)
-    });
+      .then(() => {
+        // Handle successful sign-out
+        this.navigateService.navigateTo('')
+        alert('You have successfully been logged out')
+      })
+      .catch(error => {
+        // Handle sign-out error
+        console.log(`sign out error as: ${error}`)
+      });
   }
 
   resetPassword(email: string) {
     this.auth.sendPasswordResetEmail(email)
       .then(() => {
         // Handle successful password reset email sent
+        this.navigateService.navigateTo('login')
       })
       .catch(error => {
         // Handle password reset email sending error
@@ -62,17 +66,17 @@ export class AuthService {
       });
   }
 
-  getAuthToken(): Observable<string> {
+  getIdToken(): Observable<string> {
     return this.auth.authState.pipe(
-      take(1),
       switchMap(user => {
         if (user) {
+          console.log("user: ", user)
           return from(user.getIdToken());
+        } else {
+          return of(null);
         }
-        return of(null);
       })
     );
   }
-
 
 }

@@ -43,7 +43,8 @@ export class AdminComponent implements OnInit {
   postImagePreview: string | undefined;
 
 
-  constructor(private projectRequestService: ProjectRequestsService,
+  constructor(
+    private projectRequestService: ProjectRequestsService,
     private navigationService: NavigationService,
     private storage: AngularFireStorage,
     ) {
@@ -354,6 +355,10 @@ export class AdminComponent implements OnInit {
     this.postImgFile = null;
     this.preImagePreview = undefined;
     this.postImagePreview = undefined;
+  }
+
+  createNewUser() {
+    this.navigationService.navigateTo('signup')
   }
 
 }

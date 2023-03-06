@@ -1,6 +1,7 @@
 import { AuthService } from './../services/auth.service';
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { NavigationService } from '../services/navigation.service';
 
 @Component({
   selector: 'app-login',
@@ -9,41 +10,16 @@ import { NgForm } from '@angular/forms';
 })
 export class LoginComponent {
 
-  @ViewChild('signUp') signUpform: NgForm;
   @ViewChild('signIn') signInform: NgForm;
-  classValue;
-  // email: string;
-  // password: string;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private navigationService: NavigationService) {
 
   }
 
 
-  onSignUp() {
-
-    this.classValue = "right-panel-active"
-    
-  }
-
-
-  onSignUpSubmit(formCredentials: 
-    { email: string, 
-      password: string
-    }) {
-
-      const credentials = { ...formCredentials }
-
-      console.log('SignUp Hit')
-      console.log('SignUp Credentials: ', credentials)
-
-      console.log('Calling authService Sign Up Method')
-      this.authService.signUp(credentials.email, credentials.password)
-      console.log('Finished authService Sign Up Method')
-
-    }
-
-    onSignInSubmit(formCredentials: 
+     onSignInSubmit(formCredentials: 
     { email: string, 
       password: string
     }) {
@@ -60,6 +36,15 @@ export class LoginComponent {
       console.log('Finished authService Sign In Method')
 
       
+    }
+
+    navigateToPasswordReset() {
+      console.log('clicked')
+      this.navigationService.navigateTo('pw-reset')
+    }
+
+    onCancel() {
+      this.navigationService.navigateHome()
     }
 
 }
