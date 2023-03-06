@@ -300,6 +300,8 @@ export class AdminComponent implements OnInit {
       this.preImgFile = null
       this.preImageSrc = "";
       this.preImgUrl = null;
+      this.form.controls['imgPreName'].setValue("");
+      this.form.controls['imgPreSrc'].setValue("");
       console.log("preImgName selected: ", fileName)
     } 
     else if (imgEvent.target.name === "postImageDelete") {
@@ -307,6 +309,8 @@ export class AdminComponent implements OnInit {
       this.postImgFile = null
       this.postImageSrc = "";
       this.postImgUrl = null;
+      this.form.controls['imgPostName'].setValue("");
+      this.form.controls['imgPostSrc'].setValue("");
       console.log("postImgName selected: ", fileName)
     }
     else {
