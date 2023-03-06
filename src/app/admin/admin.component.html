@@ -35,20 +35,20 @@
       
           <label>Project Pre Image</label>
           <input type="file" (change)="onPreImageChange($event)" name="Preimage" required>
-          <img [src]="preImageSrc" *ngIf="preImageSrc" style="width: 10rem">
-          <img src="../../assets/images/noimage.webp" *ngIf="!preImageSrc" style="width: 10rem">
-          <input type="button" *ngIf="editMode && preImageSrc" (click)="deleteImage($event)" name="preImageDelete" value="Delete Image">
-          <input type="text" name="imgPreSrc" ngModel>
-          <input type="text" name="imgPreName" ngModel>
+          <img [src]="preImagePreview" *ngIf="preImagePreview" style="width: 10rem">
+          <img src="../../assets/images/noimage.webp" *ngIf="!preImagePreview" style="width: 10rem">
+          <input type="button" *ngIf="editMode && preImagePreview" (click)="deleteSingleImage($event)" name="preImageDelete" value="Delete Image">
+          <!-- <input type="text" name="imgPreSrc" ngModel>
+          <input type="text" name="imgPreName" ngModel> -->
 
           
           <label>Project Post Image</label>
           <input type="file" (change)="onPostImageChange($event)" name="Postimage" required>
-          <img [src]="postImageSrc" *ngIf="postImageSrc"  style="width: 10rem">
-          <img src="../../assets/images/noimage.webp" *ngIf="!postImageSrc" style="width: 10rem">
-          <input type="button" *ngIf="editMode && postImageSrc" (click)="deleteImage($event)" name="postImageDelete" value="Delete Image" >
-          <input type="text" name="imgPostSrc" ngModel>
-          <input type="text" name="imgPostName" ngModel>
+          <img [src]="postImagePreview" *ngIf="postImagePreview"  style="width: 10rem">
+          <img src="../../assets/images/noimage.webp" *ngIf="!postImagePreview" style="width: 10rem">
+          <input type="button" *ngIf="editMode && postImagePreview" (click)="deleteSingleImage($event)" name="postImageDelete" value="Delete Image" >
+          <!-- <input type="text" name="imgPostSrc" ngModel>
+          <input type="text" name="imgPostName" ngModel> -->
         
           <input type="submit" value="{{editMode ? 'Update Project' : 'Add Project'}}" >
           <input type="button" *ngIf="editMode" value="Cancel" (click)="onCancelEditMode()">
