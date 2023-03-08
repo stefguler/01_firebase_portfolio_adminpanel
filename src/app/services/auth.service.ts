@@ -1,7 +1,7 @@
 import { NavigationService } from './navigation.service';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { from, of, take, switchMap, Observable } from 'rxjs';
+import { from, of, switchMap, Observable, map, catchError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,58 +12,70 @@ export class AuthService {
     private auth: AngularFireAuth,
     private navigateService: NavigationService) { }
 
-    
+  
+    signUp(email: string, password: string): Observable<boolean> {
+      return from(this.auth.createUserWithEmailAndPassword(email, password))
+        .pipe(
+          map((res) => {
+            // Handle successful sign-in
+            console.log(`res: ${res} typeof: ${typeof res}`);
+            return true;
+          }),
+          catchError(error => {
+            // Handle sign-in error
+            console.log(`sign in error as: ${error} typeof: ${typeof error}`);
+            return of(false);
+          })
+        );
+    }
 
 
-  signUp(email: string, password: string) {
-    this.auth.createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        // Handle successful sign-up
-        this.navigateService.navigateTo('admin')
-      })
-      .catch(error => {
-        // Handle sign-up error
-        console.log(`sign up error as: ${error}`)
-      });
+  signIn(email: string, password: string): Observable<boolean> {
+    return from(this.auth.signInWithEmailAndPassword(email, password))
+      .pipe(
+        map((res) => {
+          // Handle successful sign-in
+          console.log(`res: ${res} typeof: ${typeof res}`);
+          return true;
+        }),
+        catchError(error => {
+          // Handle sign-in error
+          console.log(`sign in error as: ${error} typeof: ${typeof error}`);
+          return of(false);
+        })
+      );
   }
 
-  signIn(email: string, password: string) {
-    this.auth.signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        // Handle successful sign-in
-        console.log('res', res)
-        this.navigateService.navigateTo('admin')
-
-      })
-      .catch(error => {
-        // Handle sign-in error
-        console.log(`sign in error as: ${error}`)
-      });
+  signOut(): Observable<boolean> {
+    return from(this.auth.signOut())
+      .pipe(
+        map((res) => {
+          // Handle successful sign-in
+          console.log(`res: ${res} typeof: ${typeof res}`);
+          return true;
+        }),
+        catchError(error => {
+          // Handle sign-in error
+          console.log(`sign in error as: ${error} typeof: ${typeof error}`);
+          return of(false);
+        })
+      );
   }
 
-  signOut() {
-    this.auth.signOut()
-      .then(() => {
-        // Handle successful sign-out
-        this.navigateService.navigateTo('')
-        alert('You have successfully been logged out')
-      })
-      .catch(error => {
-        // Handle sign-out error
-        console.log(`sign out error as: ${error}`)
-      });
-  }
-
-  resetPassword(email: string) {
-    this.auth.sendPasswordResetEmail(email)
-      .then(() => {
-        // Handle successful password reset email sent
-        this.navigateService.navigateTo('login')
-      })
-      .catch(error => {
-        // Handle password reset email sending error
-        console.log(`password reset error as: ${error}`)
-      });
+  resetPassword(email: string): Observable<boolean> {
+    return from(this.auth.sendPasswordResetEmail(email))
+      .pipe(
+        map((res) => {
+          // Handle successful sign-in
+          console.log(`res: ${res} typeof: ${typeof res}`);
+          return true;
+        }),
+        catchError(error => {
+          // Handle sign-in error
+          console.log(`sign in error as: ${error} typeof: ${typeof error}`);
+          return of(false);
+        })
+      );
   }
 
   getIdToken(): Observable<string> {

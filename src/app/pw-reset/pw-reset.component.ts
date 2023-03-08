@@ -12,18 +12,43 @@ export class PwResetComponent {
 
 
   @ViewChild('pwreset') pwResetform: NgForm;
+  message: string;
+  login_result: boolean;
   
   constructor(
     private authService: AuthService,
     private navigationService: NavigationService
     ) {}
 
-  onSubmit(formCredentials: 
-    { email: string, 
-    }) {
+    onPasswordResetSubmit(formCredentials:
+      {
+        email: string
+      }) {
+  
+      const credentials = { ...formCredentials }
+  
+      this.authService.resetPassword(formCredentials.email)
+        .subscribe((resetResult) => {
+          if (resetResult) {
+            this.login_result = true;
+            this.message = `:) \n 
+              ! Password reset successfull !
+              You shall receive your pw reset instructions to: ${formCredentials.email}! \n `;
+            this.pwResetform.reset()
+            
+          } else {
+            this.login_result = false;
+            this.message = ` :( \n
+              ! Password reset failed !
+              Something went wrong!`;
+            this.pwResetform.reset()
+          }
+        });
+    }
 
-    this.authService.resetPassword(formCredentials.email);
-    //pw reset
+  closeInfoBox() {
+    this.message = '';
+    this.login_result ? this.navigationService.navigateTo('login') : null;
   }
 
   onCancel() {

@@ -19,6 +19,8 @@ export class PortfolioComponent implements OnInit {
   errorMessage: string = null;
   errorSub: Subscription;
   postImageSrc: string | undefined;
+  logout_result: boolean;
+  message: string;
 
   
   constructor(
@@ -57,8 +59,34 @@ export class PortfolioComponent implements OnInit {
     })
   }
 
+  // logOut() {
+  //   this.authService.signOut();
+  // }
+
   logOut() {
-    this.authService.signOut();
+    this.authService.signOut()
+      .subscribe((isLoggedOut) => {
+        if (isLoggedOut) {
+          this.logout_result = true;
+          this.message = `:) \n 
+            ! Logout successfull !
+            Good-Bye xyz hopefully see you soon! \n `;
+
+          
+        } else {
+          this.logout_result = false;
+          this.message = ` :( \n
+            ! Logout failed !
+            Unfortunately we can't let you go!`;
+        }
+      });
   }
 
+  closeInfoBox() {
+    this.message = '';
+    this.logout_result ? this.navigationService.navigateHome() : null;
+  }
+
+
 }
+

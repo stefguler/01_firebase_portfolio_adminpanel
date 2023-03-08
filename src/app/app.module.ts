@@ -25,6 +25,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { PwResetComponent } from './pw-reset/pw-reset.component';
+import { DialogboxComponent } from './dialogbox/dialogbox.component';
 
 
 //icons
@@ -38,7 +39,8 @@ import { PwResetComponent } from './pw-reset/pw-reset.component';
     AdminComponent,
     LoginComponent,
     SignupComponent,
-    PwResetComponent
+    PwResetComponent,
+    DialogboxComponent
   ],
   imports: [
     BrowserModule,
