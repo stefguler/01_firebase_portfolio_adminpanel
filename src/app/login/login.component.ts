@@ -11,6 +11,8 @@ import { NavigationService } from '../services/navigation.service';
 export class LoginComponent {
 
   @ViewChild('signIn') signInform: NgForm;
+  message: string = ``;
+  login_result: boolean;
 
   constructor(
     private authService: AuthService,
@@ -19,32 +21,48 @@ export class LoginComponent {
   }
 
 
-     onSignInSubmit(formCredentials: 
-    { email: string, 
+  onSignInSubmit(formCredentials:
+    {
+      email: string,
       password: string
     }) {
 
+    const credentials = { ...formCredentials }
 
-      console.log(formCredentials)
-      const credentials = { ...formCredentials }
+    this.authService.signIn(formCredentials.email, formCredentials.password)
+      .subscribe((isSignedIn) => {
+        if (isSignedIn) {
+          this.login_result = true;
+          this.message = `:) \n 
+            ! Login successfull !
+            Welcome ${formCredentials.email}! \n `;
+          this.signInform.reset()
+          
+        } else {
+          this.login_result = false;
+          this.message = ` :( \n
+            ! Login failed !
+            Unfortunately the email: "${formCredentials.email}" or password is not known to the database. Please try again!`;
+          this.signInform.reset()
+        }
+      });
+  }
 
-      console.log('SignIn Hit')
-      console.log('SingIn credentials: ', credentials)
 
-      console.log('Calling authService Sign In Method')
-      this.authService.signIn(credentials.email, credentials.password)
-      console.log('Finished authService Sign In Method')
 
-      
-    }
+  closeInfoBox() {
+    this.message = '';
+    this.login_result ? this.navigationService.navigateHome() : null;
+  }
 
-    navigateToPasswordReset() {
-      console.log('clicked')
-      this.navigationService.navigateTo('pw-reset')
-    }
 
-    onCancel() {
-      this.navigationService.navigateHome()
-    }
+  navigateToPasswordReset() {
+    console.log('clicked')
+    this.navigationService.navigateTo('pw-reset')
+  }
+
+  onCancel() {
+    this.navigationService.navigateHome()
+  }
 
 }

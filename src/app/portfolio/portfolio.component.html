@@ -30,4 +30,5 @@
   </ngb-carousel>
 <button (click)="navigate('login')">Go to login</button>
 <button (click)="logOut()">Logout</button>
+<app-dialogbox [message]="message" *ngIf="message" (close)="closeInfoBox()"></app-dialogbox>
 </article>
