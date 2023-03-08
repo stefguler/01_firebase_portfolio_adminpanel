@@ -9,10 +9,11 @@ import { NavigationService } from '../services/navigation.service';
 })
 export class SignupComponent {
 
+  token: string;
+
   constructor(private authService: AuthService,
     private navigationService: NavigationService) {
-
-  }
+    }
 
   onSignUpSubmit(formCredentials: 
     { email: string, 

@@ -70,7 +70,6 @@ export class AuthService {
     return this.auth.authState.pipe(
       switchMap(user => {
         if (user) {
-          console.log("user: ", user)
           return from(user.getIdToken());
         } else {
           return of(null);
