@@ -28,9 +28,6 @@ import { PwResetComponent } from './pw-reset/pw-reset.component';
 import { DialogboxComponent } from './dialogbox/dialogbox.component';
 
 
-//icons
-
-
 @NgModule({
   declarations: [
     AppComponent,

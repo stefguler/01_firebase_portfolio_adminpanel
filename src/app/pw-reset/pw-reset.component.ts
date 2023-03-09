@@ -28,22 +28,32 @@ export class PwResetComponent {
       const credentials = { ...formCredentials }
   
       this.authService.resetPassword(formCredentials.email)
-        .subscribe((resetResult) => {
-          if (resetResult) {
-            this.login_result = true;
-            this.message = `:) \n 
-              ! Password reset successfull !
-              You shall receive your pw reset instructions to: ${formCredentials.email}! \n `;
-            this.pwResetform.reset()
-            
+        .subscribe((authResult) => {          
+        
+        if (authResult.result) {
+          this.login_result = true;
+          this.message = `:) \n 
+            ! Password reset successfull !
+            You shall have received instructions to reset your password to: ${formCredentials.email}!`;
+          this.pwResetform.reset()
+
+        } else {
+          this.login_result = false;
+          let errorMessage: string;
+
+          if (authResult.message.toString().includes("FirebaseError: Firebase: ")) {
+              errorMessage = authResult.message.toString().replace("FirebaseError: Firebase: ", "")
           } else {
-            this.login_result = false;
-            this.message = ` :( \n
-              ! Password reset failed !
-              Something went wrong!`;
-            this.pwResetform.reset()
+            errorMessage = authResult.message.toString();
           }
-        });
+          this.message = ` :( \n
+            ! Password reset failed !
+            ${errorMessage} \n 
+            :( `;
+          this.pwResetform.reset()
+        }
+
+       });
     }
 
   closeInfoBox() {

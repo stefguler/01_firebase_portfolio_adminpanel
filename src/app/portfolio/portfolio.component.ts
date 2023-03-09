@@ -22,9 +22,9 @@ export class PortfolioComponent implements OnInit {
   logout_result: boolean;
   message: string;
 
-  
+
   constructor(
-    private navigationService: NavigationService, 
+    private navigationService: NavigationService,
     private projectsRequestService: ProjectRequestsService,
     private authService: AuthService) {
   }
@@ -41,7 +41,6 @@ export class PortfolioComponent implements OnInit {
   }
 
   navigate(adress: string) {
-    console.log(adress)
     this.navigationService.navigateTo(`${adress}`)
   }
 
@@ -63,24 +62,37 @@ export class PortfolioComponent implements OnInit {
   //   this.authService.signOut();
   // }
 
+
+
   logOut() {
+
     this.authService.signOut()
-      .subscribe((isLoggedOut) => {
-        if (isLoggedOut) {
+      .subscribe((authResult) => {
+
+        if (authResult.result) {
           this.logout_result = true;
           this.message = `:) \n 
-            ! Logout successfull !
-            Good-Bye xyz hopefully see you soon! \n `;
+          ! Logout successfull !
+          Good-Bye ${authResult.message}, hopefully see you soon again! \n `;
 
-          
         } else {
           this.logout_result = false;
+          let errorMessage: string;
+
+          if (authResult.message.toString().includes("FirebaseError: Firebase: ")) {
+            errorMessage = authResult.message.toString().replace("FirebaseError: Firebase: ", "")
+          } else {
+            errorMessage = authResult.message.toString();
+          }
           this.message = ` :( \n
             ! Logout failed !
-            Unfortunately we can't let you go!`;
+            ${errorMessage} \n 
+            :( `;
         }
+
       });
   }
+
 
   closeInfoBox() {
     this.message = '';
