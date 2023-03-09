@@ -28,8 +28,6 @@ export class SignupComponent {
 
     const credentials = { ...formCredentials }
 
-    console.log('Calling authService Sign Up Method')
-
     // this.authService.signUp(credentials.email, credentials.password)
     this.authService.signUp(credentials.email, credentials.password)
       .subscribe((authResult) => {

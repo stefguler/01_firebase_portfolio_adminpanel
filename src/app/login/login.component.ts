@@ -32,8 +32,6 @@ export class LoginComponent {
     this.authService.signIn(formCredentials.email, formCredentials.password)
       .subscribe((authResult) => {
 
-
-
         if (authResult.result) {
           this.login_result = true;
           this.message = `:) \n 
@@ -68,7 +66,6 @@ export class LoginComponent {
 
 
   navigateToPasswordReset() {
-    console.log('clicked')
     this.navigationService.navigateTo('pw-reset')
   }
 

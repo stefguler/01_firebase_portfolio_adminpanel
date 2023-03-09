@@ -135,7 +135,6 @@ export class AdminComponent implements OnInit {
     let request: Observable<any>;
 
     // Wait for both image uploads to complete
-
     Promise.all(imageUploadPromises)
       .then(() => {
         // Add the image paths to the project data
@@ -241,16 +240,13 @@ export class AdminComponent implements OnInit {
       colors: this.currentProject.colors,
       price: this.currentProject.price,
     });
-
     //change value from "Add Product" - button to "Update Product" Button
     this.editMode = true;
-
   }
 
   onCancelEditMode() {
     this.editMode = false;
     this.resetPageData()
-
   }
 
   navigate(adress: string) {
@@ -326,7 +322,6 @@ export class AdminComponent implements OnInit {
         });
       })
     })
-
   }
 
   loadPreImage() {

@@ -77,20 +77,18 @@ export class AuthService {
       .pipe(
         map((res) => {
           // Handle successful sign-out
-
           if (currentUser) {
             this.authResult.result = true;
             this.authResult.message = currentUser.email;
             return (this.authResult);
           } else {
             this.authResult.result = false;
-            this.authResult.message = 'There is no one logged in!';
+            this.authResult.message = 'There is no user currently logged in!';
             return (this.authResult);
           }
         }),
         catchError(error => {
           // Handle sign-out error
-          console.log(`sign out error as: ${error} typeof: ${typeof error}`);
           this.authResult.result = false;
           this.authResult.message = error;
           return of(this.authResult);
@@ -98,31 +96,12 @@ export class AuthService {
       );
   }
 
-
-
-  // signOut(): Observable<boolean> {
-  //   return from(this.auth.signOut())
-  //     .pipe(
-  //       map((res) => {
-  //         // Handle successful sign-in
-  //         console.log(`res: ${res} typeof: ${typeof res}`);
-  //         return true;
-  //       }),
-  //       catchError(error => {
-  //         // Handle sign-in error
-  //         console.log(`sign out error as: ${error} typeof: ${typeof error}`);
-  //         return of(false);
-  //       })
-  //     );
-  // }
-
   resetPassword(email: string): Observable<authResult> {
     return from(this.auth.sendPasswordResetEmail(email))
       .pipe(
         map((res) => {
           // Handle successful sign-in
           this.authResult.result = true;
-          console.log('res here: ', res)
           this.authResult.message = 'pw reset success';
           return this.authResult;
         }),

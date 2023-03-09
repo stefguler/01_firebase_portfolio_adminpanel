@@ -41,7 +41,6 @@ export class PortfolioComponent implements OnInit {
   }
 
   navigate(adress: string) {
-    console.log(adress)
     this.navigationService.navigateTo(`${adress}`)
   }
 
