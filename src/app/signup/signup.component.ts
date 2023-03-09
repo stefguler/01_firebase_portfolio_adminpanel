@@ -32,23 +32,33 @@ export class SignupComponent {
 
     // this.authService.signUp(credentials.email, credentials.password)
     this.authService.signUp(credentials.email, credentials.password)
-      .subscribe((isSignedUp) => {
-        if (isSignedUp) {
+      .subscribe((authResult) => {
+
+        
+        if (authResult.result) {
           this.login_result = true;
           this.message = `:) \n 
-            ! Login successfull !
-            Welcome ${credentials.email}! \n `;
+            ! Sign Up successfull !
+            Welcome ${formCredentials.email}! You can now sign-in as admin to this page.\n `;
           this.signUp.reset()
 
         } else {
           this.login_result = false;
+          let errorMessage: string;
+
+          if (authResult.message.toString().includes("FirebaseError: Firebase: ")) {
+              errorMessage = authResult.message.toString().replace("FirebaseError: Firebase: ", "")
+          } else {
+            errorMessage = authResult.message.toString();
+          }
           this.message = ` :( \n
             ! Sign Up failed !
-            Something went wrong, please try again...`
-
+            ${errorMessage} \n 
+            :( `;
           this.signUp.reset()
         }
-      });
+
+       });
   }
 
   onCancel() {

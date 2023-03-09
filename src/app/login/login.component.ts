@@ -30,19 +30,30 @@ export class LoginComponent {
     const credentials = { ...formCredentials }
 
     this.authService.signIn(formCredentials.email, formCredentials.password)
-      .subscribe((isSignedIn) => {
-        if (isSignedIn) {
+      .subscribe((authResult) => {
+
+
+
+        if (authResult.result) {
           this.login_result = true;
           this.message = `:) \n 
             ! Login successfull !
             Welcome ${formCredentials.email}! \n `;
           this.signInform.reset()
-          
+
         } else {
           this.login_result = false;
+          let errorMessage: string;
+
+          if (authResult.message.toString().includes("FirebaseError: Firebase: ")) {
+              errorMessage = authResult.message.toString().replace("FirebaseError: Firebase: ", "")
+          } else {
+            errorMessage = authResult.message.toString();
+          }
           this.message = ` :( \n
             ! Login failed !
-            Unfortunately the email: "${formCredentials.email}" or password is not known to the database. Please try again!`;
+            ${errorMessage} \n 
+            :( `;
           this.signInform.reset()
         }
       });
