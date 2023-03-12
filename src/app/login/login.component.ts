@@ -1,3 +1,4 @@
+import { NavigationService } from './../services/navigation.service';
 import { AuthService } from './../services/auth.service';
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
@@ -16,17 +17,17 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private element: ElementRef,
-    private renderer: Renderer2) {
+    private navigationService: NavigationService
+) {
 
   }
 
 
-  onSignUp() {
+  // onSignUp() {
 
-    this.classValue = "right-panel-active"
+  //   this.classValue = "right-panel-active"
     
-  }
+  // }
 
 
   onSignUpSubmit(formCredentials: 
