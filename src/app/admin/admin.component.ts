@@ -1,16 +1,12 @@
+import { ImageHandlerService } from './../services/image-handler.service';
 import { NavigationService } from './../services/navigation.service';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Project } from '../models/project';
+import { ImageType, Project } from '../models/project';
 import { ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { ProjectRequestsService } from '../services/project-requests.service';
-
-import { AngularFireStorage } from '@angular/fire/compat/storage';
-import 'firebase/compat/storage';
-import { forkJoin, from, Observable, of, } from 'rxjs';
-import { ListResult } from '@firebase/storage-types';
-import { AuthService } from '../services/auth.service';
+import { forkJoin, Observable, of, } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -24,7 +20,7 @@ export class AdminComponent implements OnInit {
   allProjects: Project[] = [];
   currentProject: Project;
   currentProjectId: string;
-  
+
   //page handling
   isFetching: boolean = false;
   editMode: boolean = false;
@@ -34,9 +30,9 @@ export class AdminComponent implements OnInit {
   //form handling
   @ViewChild('projectForm') form: NgForm;
 
-  //img handling
   preImgFile: File | null = null;
   postImgFile: File | null = null;
+  imageFile: File | null = null;
   newPreImgName: string;
   newPostImgName: string;
   preImagePreview: string | undefined;
@@ -46,14 +42,14 @@ export class AdminComponent implements OnInit {
   constructor(
     private projectRequestService: ProjectRequestsService,
     private navigationService: NavigationService,
-    private storage: AngularFireStorage,
-    ) {
+    private imageHandler: ImageHandlerService,
+  ) {
 
-      this.currentProject = {
-        id: '', date: null, object: '', model: '', title: '', description: '', technique: '',
-        colors: [], price:'', imgPreName: '', imgPreSrc: '', imgPostName: '', imgPostSrc: '',
-        altText: ''
-      }
+    this.currentProject = {
+      id: '', date: null, object: '', model: '', title: '', description: '', technique: '',
+      colors: [], price: '', imgPreName: '', imgPreSrc: '', imgPostName: '', imgPostSrc: '',
+      altText: ''
+    }
   }
 
   ngOnInit() {
@@ -82,54 +78,45 @@ export class AdminComponent implements OnInit {
   }) {
 
     const projectData = { ...projectFormValue };
-    
     const projectImagePaths = {};
-    const storageRef = this.storage.ref('project-images');
-
     const imageUploadPromises = [];
 
-    // Upload pre-image
+    // step 1: Enhance Project Data
+
+    //enhance project with the alt Text
+    projectData['altText'] = `${projectData.title}: Ein ${projectData.model} ${projectData.object} nach dem Einsatz von ${projectData.technique}`
+
+    // hande pre image upload if there is any selected
     if (this.preImgFile) {
-      const preImageName = this.newPreImgName
-      const preImagePath = `pre/${preImageName}`;
-      const preImageRef = storageRef.child(preImagePath);
-      const preImageTask = preImageRef.put(this.preImgFile!);
-      projectImagePaths['imgPreName'] = preImagePath;
-      imageUploadPromises.push(preImageTask);
+
+      //create the image upload task and prepare the urls to later store in the project data
+      const newUploadTask = this.imageHandler.getUploadImageTask(ImageType.pre, this.newPreImgName, this.preImgFile!)
+      projectImagePaths['imgPreName'] = `pre/${this.newPreImgName}`;
+      imageUploadPromises.push(newUploadTask);
+
       // delete the current pre image if it exists
       if (this.currentProject.imgPreSrc) {
-        const preImageToDelete = this.storage.ref(`project-images/pre/${this.currentProject.imgPreName}`);
-        preImageToDelete.delete().subscribe();
+        this.imageHandler.deleteImage(ImageType.pre, this.currentProject.imgPreName)
       }
     } else {
-      projectImagePaths['imgPreName'] = `pre/${this.currentProject.imgPreName}`;
+      (this.currentProject.imgPreName) ? projectImagePaths['imgPreName'] = `pre/${this.currentProject.imgPreName}` : null;
     }
 
     // Upload post-image
     if (this.postImgFile) {
-      const postImageName = this.newPostImgName
-      const postImagePath = `post/${postImageName}`;
-      const postImageRef = storageRef.child(postImagePath);
-      const postImageTask = postImageRef.put(this.postImgFile!);
-      projectImagePaths['imgPostName'] = postImagePath;
-      imageUploadPromises.push(postImageTask);
+
+      //create the image upload task and prepare the urls to later store in the project data
+      const newUploadTask = this.imageHandler.getUploadImageTask(ImageType.post, this.newPostImgName, this.postImgFile!)
+      projectImagePaths['imgPostName'] = `post/${this.newPostImgName}`;
+      imageUploadPromises.push(newUploadTask);
+
       // delete the current post image if it exists
       if (this.currentProject.imgPostSrc) {
-        const postImageToDelete = this.storage.ref(`project-images/post/${this.currentProject.imgPostName}`);
-        postImageToDelete.delete().subscribe();
+        this.imageHandler.deleteImage(ImageType.post, this.currentProject.imgPostName)
       }
     } else {
-      projectImagePaths['imgPostName'] = `post/${this.currentProject.imgPostName}`;
+      (this.currentProject.imgPostName) ? projectImagePaths['imgPostName'] = `post/${this.currentProject.imgPostName}` : null;
     }
-
-    // create alt Text
-    const altText = `
-      ${projectData.title}: 
-      Ein ${projectData.model} 
-      ${projectData.object} nach dem 
-      Einsatz von ${projectData.technique}`
-
-    projectData['altText'] = altText;
 
     // Initialize the request variable
     let request: Observable<any>;
@@ -144,11 +131,12 @@ export class AdminComponent implements OnInit {
         let downloadPreImage$: Observable<string> = of(null);
         let downloadPostImage$: Observable<string> = of(null);
 
+        //enhance the project data with the images url, if available
         if (projectData.imgPreName) {
-          downloadPreImage$ = this.storage.ref(`project-images/${projectData.imgPreName}`).getDownloadURL();
+          downloadPreImage$ = this.imageHandler.getImageUrl(ImageType.pre, projectData.imgPreName)
         }
         if (projectData.imgPostName) {
-          downloadPostImage$ = this.storage.ref(`project-images/${projectData.imgPostName}`).getDownloadURL();
+          downloadPostImage$ = this.imageHandler.getImageUrl(ImageType.post, projectData.imgPostName)
         }
 
         forkJoin([downloadPreImage$, downloadPostImage$]).subscribe((urls: string[]) => {
@@ -156,7 +144,6 @@ export class AdminComponent implements OnInit {
           projectData.imgPostSrc = urls[1];
           projectData.imgPreName = this.newPreImgName;
           projectData.imgPostName = this.newPostImgName;
-
 
           (this.editMode) ? request = this.projectRequestService.updateProject(this.currentProjectId, projectData) :
             request = this.projectRequestService.createProject(projectData);
@@ -196,9 +183,20 @@ export class AdminComponent implements OnInit {
   }
 
   onDeleteProject(id: string) {
-    this.projectRequestService.deleteProject(id).subscribe(() => {
-      this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
-        this.allProjects = projects;
+    this.projectRequestService.getProject(id).subscribe((selectedProject: Project) => {
+
+      if (selectedProject.imgPreSrc) {
+        this.imageHandler.deleteImage(ImageType.pre, selectedProject.imgPreName)
+      }
+
+      if (selectedProject.imgPostSrc) {
+        this.imageHandler.deleteImage(ImageType.post, selectedProject.imgPostName)
+      }
+
+      this.projectRequestService.deleteProject(id).subscribe(() => {
+        this.projectRequestService.fetchProjects().subscribe((projects: Project[]) => {
+          this.allProjects = projects;
+        });
       });
     });
   }
@@ -239,6 +237,9 @@ export class AdminComponent implements OnInit {
       technique: this.currentProject.technique,
       colors: this.currentProject.colors,
       price: this.currentProject.price,
+      preimage: null,
+      postimage: null,
+
     });
     //change value from "Add Product" - button to "Update Product" Button
     this.editMode = true;
@@ -254,102 +255,92 @@ export class AdminComponent implements OnInit {
   }
 
   //always have to save the picture in a File before I can use it and on submit send it
-  onPreImageChange(event: any) {
 
-    this.preImgFile = event.target.files[0];
+  onImageChange(event: any) {
 
-    if (this.preImgFile != undefined) {
-      this.loadPreImage();
-      this.newPreImgName = `${new Date().getTime()}_${this.preImgFile?.name}`;
+    this.imageFile = event.target.files[0];
 
+    if (this.imageFile != undefined) {
+      if (event.target.name === "preimage") {
+        this.loadImage(ImageType.pre)
+        this.newPreImgName = `${new Date().getTime()}_${this.imageFile?.name}`;
+      } else if (event.target.name === "postimage") {
+        this.loadImage(ImageType.post)
+        this.newPostImgName = `${new Date().getTime()}_${this.imageFile?.name}`;
+      } else {
+        console.log('event.target.name not recognized: ', event.target.name)
+      }
     } else {
-      this.newPreImgName = undefined
+
+      if (event.target.name === "preimage") {
+        this.newPreImgName = undefined;
+      } else if (event.target.name === "postimage") {
+        this.postImagePreview = undefined;
+      }
     }
+
   }
 
-  //always have to save the picture in a File before I can use it and on submit send it
-  onPostImageChange(event: any) {
-    this.postImgFile = event.target.files[0];
-
-    if (this.postImgFile != undefined) {
-      this.loadPostImage();
-      this.newPostImgName = `${new Date().getTime()}_${this.postImgFile?.name}`;
-    } else {
-      this.newPostImgName = undefined
-    }
-  }
-
-  deleteSingleImage(imgEvent: any) {
-
-    let fileName: string = '';
+  deleteImage(imgEvent: any) {
 
     if (imgEvent.target.name === "preImageDelete") {
-      fileName = `pre/${this.currentProject.imgPreName}`
+
+      this.imageHandler.deleteImage(ImageType.pre, `${this.currentProject.imgPreName}`)
+
+      //reset the data
       this.preImgFile = null
       this.currentProject.imgPreName = '';
       this.currentProject.imgPreSrc = '';
       this.preImagePreview = ''
     }
     else if (imgEvent.target.name === "postImageDelete") {
-      fileName = `post/${this.currentProject.imgPostName}`
+
+      this.imageHandler.deleteImage(ImageType.post, `${this.currentProject.imgPostName}`)
+
+      //reset the data
       this.postImgFile = null
       this.currentProject.imgPostName = '';
       this.currentProject.imgPostSrc = '';
       this.postImagePreview = ''
     }
 
-    const fileToDelete = this.storage.ref(`project-images/${fileName}`);
-    fileToDelete.delete().subscribe();
-
   }
+
 
   deleteAllImages() {
-
-    const folderList = ["pre", "post"]
-
-    folderList.forEach((folderItem) => {
-
-      const folderRef = this.storage.ref(`/project-images/${folderItem}`)
-
-      // Use the 'listAll' method to get a list of all files in the folder
-      const listObservable = from(folderRef.listAll());
-
-      // Convert the Observable to a Promise using 'toPromise' method
-      listObservable.toPromise().then((listResult: ListResult) => {
-        listResult.items.forEach((itemRef) => {
-          // Delete each file in the folder
-          itemRef.delete()
-        });
-      })
-    })
+    this.imageHandler.clearImages();
   }
 
-  loadPreImage() {
-    const reader = new FileReader();
-    reader.onload = (event: any) => {
-      this.preImagePreview = event.target.result;
-    };
-    reader.readAsDataURL(this.preImgFile);
-  }
+  loadImage(imageType: ImageType) {
 
-  loadPostImage() {
     const reader = new FileReader();
     reader.onload = (event: any) => {
-      this.postImagePreview = event.target.result;
-    };
-    reader.readAsDataURL(this.postImgFile);
+      if (imageType === ImageType.pre) {
+        this.preImagePreview = event.target.result
+        this.preImgFile = this.imageFile
+      } else if (imageType === ImageType.post) {
+        this.postImagePreview = event.target.result;
+        this.postImgFile = this.imageFile
+      }
+    }
+    reader.readAsDataURL(this.imageFile);
   }
 
   resetPageData() {
     this.form.reset();
-    this.currentProject = {id: '', date: null, object: '', model: '', title: '', description: '', technique: '',
-    colors: [], price:'', imgPreName: '', imgPreSrc: '', imgPostName: '', imgPostSrc: '',
-    altText: ''};
+    this.currentProject = {
+      id: '', date: null, object: '', model: '', title: '', description: '', technique: '',
+      colors: [], price: '', imgPreName: '', imgPreSrc: '', imgPostName: '', imgPostSrc: '',
+      altText: ''
+    };
     this.editMode = false;
     this.preImgFile = null;
     this.postImgFile = null;
+    this.imageFile = null;
     this.preImagePreview = undefined;
     this.postImagePreview = undefined;
+    this.newPreImgName = undefined;
+    this.newPreImgName = undefined;
   }
 
   createNewUser() {
