@@ -14,3 +14,8 @@ export class Project {
   imgPostSrc: string;
   altText: string;
 }
+
+export enum ImageType {
+  pre = "pre",
+  post = "post"
+}

@@ -1,5 +1,15 @@
 
-<div class="container" id="container">
+<div class="container" id="container"> <!--Add "right-panel-active" to class to show the other side-->
+	<div class="form-container sign-up-container">
+		<form #signUp ="ngForm" (ngSubmit)="onSignUpSubmit(signUp.value)">
+			<h1>Create Account</h1>
+			<span>or use your email for registration</span>
+			<input type="text" name="email" placeholder="Email" ngModel/>
+			<input type="text" name="password" placeholder="Password" ngModel/>
+			<input type="password" placeholder="Password" />
+			<button>Sign Up</button>
+		</form>
+	</div>
 	<div class="form-container sign-in-container">
 		<form #signIn ="ngForm" (ngSubmit)="onSignInSubmit(signIn.value)">
 			<h1>Sign in</h1>
@@ -12,6 +22,20 @@
                 <button (click)="onCancel()">Cancel</button>
             </div>
 		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Welcome Back!</h1>
+				<p>To keep connected with us please login with your personal info</p>
+				<button class="ghost" id="signIn">Sign In</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Hello, Friend!</h1>
+				<p>Enter your personal details and start journey with us</p>
+				<button class="ghost" id="signUp">Sign Up</button>
+			</div>
+		</div>
 	</div>
 </div>
 <app-dialogbox [message]="message" *ngIf="message" (close)="closeInfoBox()"></app-dialogbox>

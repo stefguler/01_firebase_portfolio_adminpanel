@@ -1,7 +1,7 @@
+import { NavigationService } from './../services/navigation.service';
 import { AuthService } from './../services/auth.service';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NavigationService } from '../services/navigation.service';
 
 @Component({
   selector: 'app-login',
@@ -10,16 +10,37 @@ import { NavigationService } from '../services/navigation.service';
 })
 export class LoginComponent {
 
+  @ViewChild('signUp') signUpform: NgForm;
   @ViewChild('signIn') signInform: NgForm;
   message: string = ``;
   login_result: boolean;
 
   constructor(
     private authService: AuthService,
-    private navigationService: NavigationService) {
+    private navigationService: NavigationService
+) {
 
   }
 
+
+  // onSignUp() {
+
+  //   this.classValue = "right-panel-active"
+    
+  // }
+
+
+  onSignUpSubmit(formCredentials: 
+    { email: string, 
+      password: string
+    }) {
+
+      const credentials = { ...formCredentials }
+
+      this.authService.signUp(credentials.email, credentials.password)
+
+
+    }
 
   onSignInSubmit(formCredentials:
     {
