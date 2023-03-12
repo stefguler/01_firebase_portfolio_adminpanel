@@ -14,10 +14,13 @@
 		<form #signIn ="ngForm" (ngSubmit)="onSignInSubmit(signIn.value)">
 			<h1>Sign in</h1>
 			<span>or use your account</span>
-			<input type="text" name="email" placeholder="Email" ngModel/>
-			<input type="text" name="password" placeholder="Password" ngModel/>
-			<a href="#">Forgot your password?</a>
-			<button type="submit">Sign In</button>
+			<input type="email" name="email" placeholder="Email" ngModel/>
+			<input type="password" name="password" placeholder="Password" ngModel/>
+			<div class="forgotpw" (click)="navigateToPasswordReset()">Forgot your password?</div>
+			<div class="btn-div">
+                <button type="submit">Sign in</button>
+                <button (click)="onCancel()">Cancel</button>
+            </div>
 		</form>
 	</div>
 	<div class="overlay-container">
@@ -35,12 +38,4 @@
 		</div>
 	</div>
 </div>
-
-<footer>
-	<p>
-		Created with <i class="fa fa-heart"></i> by
-		<a target="_blank" href="https://florin-pop.com">Florin Pop</a>
-		- Read how I created this and how you can join the challenge
-		<a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.
-	</p>
-</footer>
+<app-dialogbox [message]="message" *ngIf="message" (close)="closeInfoBox()"></app-dialogbox>
