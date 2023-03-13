@@ -1,9 +1,9 @@
-import { ProjectRequestsService } from './../services/project-requests.service';
+import { ProjectRequestsService } from '../../services/project-requests.service';
 
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Project } from '../models/project';
-import { NavigationService } from '../services/navigation.service';
+import { Project } from '../../models/project';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-project',

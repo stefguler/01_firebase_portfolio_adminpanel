@@ -1,5 +1,5 @@
 import { from, Observable } from 'rxjs';
-import { ImageType, Project } from './../models/project';
+import { ImageType } from './../models/project';
 import { Injectable } from '@angular/core';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
 import 'firebase/compat/storage';
@@ -11,11 +11,8 @@ import { ListResult } from '@firebase/storage-types';
 export class ImageHandlerService {
 
   storageRef = this.storage.ref('project-images')
-  preImagePreview: string | undefined;
-  postImagePreview: string | undefined;
 
-
-  constructor(private storage: AngularFireStorage,) { }
+  constructor(private storage: AngularFireStorage) { }
 
   getUploadImageTask(
     imageType: ImageType,

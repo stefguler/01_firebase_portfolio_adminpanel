@@ -1,9 +1,9 @@
-import { ProjectRequestsService } from './../services/project-requests.service';
+import { ProjectRequestsService } from '../../services/project-requests.service';
 import { Component, OnInit } from '@angular/core';
-import { Project } from '../models/project';
-import { NavigationService } from '../services/navigation.service';
+import { Project } from '../../models/project';
+import { NavigationService } from '../../services/navigation.service';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({

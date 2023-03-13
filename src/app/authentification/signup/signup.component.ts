@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
-import { NavigationService } from '../services/navigation.service';
+import { AuthService } from '../../services/auth.service';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-signup',

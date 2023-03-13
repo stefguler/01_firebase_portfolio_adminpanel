@@ -1,12 +1,12 @@
 import { AuthGuardService } from './services/auth-guard.service';
-import { LoginComponent } from './login/login.component';
-import { AdminComponent } from './admin/admin.component';
+import { LoginComponent } from './authentification/login/login.component';
+import { AdminComponent } from './pages/admin/admin.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PortfolioComponent } from './portfolio/portfolio.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { SignupComponent } from './signup/signup.component';
-import { PwResetComponent } from './pw-reset/pw-reset.component';
+import { PortfolioComponent } from './pages/portfolio/portfolio.component';
+import { ProjectsComponent } from './pages/projects/projects.component';
+import { SignupComponent } from './authentification/signup/signup.component';
+import { PwResetComponent } from './authentification/pw-reset/pw-reset.component';
 
 const routes: Routes = [
   { path: '', component: PortfolioComponent },

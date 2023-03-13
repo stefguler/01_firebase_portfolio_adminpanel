@@ -1,11 +1,11 @@
-import { ImageHandlerService } from './../services/image-handler.service';
-import { NavigationService } from './../services/navigation.service';
+import { ImageHandlerService } from '../../services/image-handler.service';
+import { NavigationService } from '../../services/navigation.service';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ImageType, Project } from '../models/project';
+import { ImageType, Project } from '../../models/project';
 import { ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { ProjectRequestsService } from '../services/project-requests.service';
+import { ProjectRequestsService } from '../../services/project-requests.service';
 import { forkJoin, Observable, of, } from 'rxjs';
 
 @Component({
@@ -226,6 +226,8 @@ export class AdminComponent implements OnInit {
 
     this.preImagePreview = this.currentProject.imgPreSrc
     this.postImagePreview = this.currentProject.imgPostSrc
+    this.newPreImgName = this.currentProject.imgPreName
+    this.newPostImgName = this.currentProject.imgPostName
 
     //fill the form with product details
     this.form.setValue({
@@ -273,9 +275,9 @@ export class AdminComponent implements OnInit {
     } else {
 
       if (event.target.name === "preimage") {
-        this.newPreImgName = undefined;
+        this.newPreImgName = this.currentProject.imgPreName;
       } else if (event.target.name === "postimage") {
-        this.postImagePreview = undefined;
+        this.newPreImgName = this.currentProject.imgPostName;
       }
     }
 
@@ -303,6 +305,8 @@ export class AdminComponent implements OnInit {
       this.currentProject.imgPostSrc = '';
       this.postImagePreview = ''
     }
+
+    this.editMode = !this.editMode;
 
   }
 

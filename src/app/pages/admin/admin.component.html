@@ -9,11 +9,12 @@
       <div class="form-area">
         <h3 *ngIf="!editMode">Neues Projekt hinzufügen</h3>
         <h3 *ngIf="editMode">Projekt-Daten anpassen</h3>
-        <form #projectForm ="ngForm"(ngSubmit)="onProjectCreateOrUpdate(projectForm.value)">
+        <form #projectForm="ngForm" (ngSubmit)="onProjectCreateOrUpdate(projectForm.value)">
           <label for="title">Projekt Name*</label>
-          <input type="text" name="title" placeholder="Namen als Projekttitel wählen..." ngModel #title="ngModel" required>
+          <input type="text" name="title" placeholder="Namen des Projekts definieren ..." ngModel #title="ngModel"
+            required>
           <div>
-            <small *ngIf="title.invalid && title.touched" >Der Projekttitel muss gewählt werden</small>
+            <small *ngIf="title.invalid && title.touched">Der Projekttitel muss gewählt werden</small>
           </div>
 
           <label for="date">Datum der Umsetzung*</label>
@@ -24,55 +25,64 @@
 
           <label for="object">Objekt</label>
           <select type="text" name="object" ngModel>
-            <option value="Auto">Auto</option>
+            <option value disabled selected="Placeholder">Objekttyp wählen ...</option>
+            <option value ="Auto">Auto</option>
             <option value="Lastwagen">Lastwagen</option>
             <option value="Motorbike">Motorbike</option>
             <option value="Zug">Zug</option>
             <option value="Flugzeug">Flugzeug</option>
             <option value="Anderes">Anderes</option>
           </select>
-      
+
           <label>Modell</label>
-          <input type="text" name="model" placeholder="Objektmodel eingeben (z.B. Audi A4, Ducati Monster, MAN TGX, etc.) ..." ngModel> 
+          <input type="text" name="model"
+            placeholder="Objektmodel eingeben (z.B. Audi A4, Ducati Monster, MAN TGX, etc.) ..." ngModel>
 
           <label for="description">Beschreibung*</label>
-          <input type="text" name="description" placeholder="Hier die umfassende Projektbeschreibung eingeben ..." ngModel  ngModel #description="ngModel" required="">
+          <input type="text" name="description" placeholder="Hier die umfassende Projektbeschreibung eingeben ..."
+            ngModel ngModel #description="ngModel" required="">
           <div>
-            <small *ngIf="description.invalid && description.touched" >Das Projekt muss beschrieben werden</small>
+            <small *ngIf="description.invalid && description.touched">Das Projekt muss beschrieben werden</small>
           </div>
 
           <label for="technique">Technik</label>
-          <input type="text" name="technique" placeholder="Die verwendete Technik der Objektlakierung eingeben ..." ngModel>
+          <input type="text" name="technique" placeholder="Die verwendete Technik der Objektlakierung eingeben ..."
+            ngModel>
 
           <label for="colors">Farben</label>
-          <input type="text" name="colors" placeholder="Involvierte Farben angeben (mit Koma-Symbol Farben trennen, z.B. gelb, braun, rot) ..." ngModel>
+          <input type="text" name="colors"
+            placeholder="Involvierte Farben angeben (mit Koma-Symbol Farben trennen, z.B. gelb, braun, rot) ..."
+            ngModel>
 
           <label for="price">Umsetzungspreis</label>
           <input type="text" name="price" placeholder="Umsetzungpreis eingeben ..." ngModel>
-      
+
           <label for="Preimage">Vorher Bild*</label>
           <input type="file" (change)="onImageChange($event)" name="preimage" #preimg="ngModel" ngModel required>
           <div>
-            <small *ngIf="preimg.invalid && preimg.touched" >Das "Vorher" Bild muss gewählt werden</small>
+            <small *ngIf="preimg.invalid && preimg.touched">Das "Vorher" Bild muss gewählt werden</small>
           </div>
           <img [src]="preImagePreview" *ngIf="preImagePreview" style="width: 10rem">
           <img src="../../assets/images/noimage.webp" *ngIf="!preImagePreview" style="width: 10rem">
-          <input type="button" *ngIf="editMode && preImagePreview" (click)="deleteImage($event)" name="preImageDelete" value="Delete Image">
+          <input type="button" *ngIf="editMode && preImagePreview" (click)="deleteImage($event)" name="preImageDelete"
+            value="Delete Image">
 
-          
+
           <label for="Postimage">Nachher Bild*</label>
           <input type="file" (change)="onImageChange($event)" name="postimage" #postimg="ngModel" ngModel required>
           <div>
-            <small *ngIf="postimg.invalid && postimg.touched" >Ein "Nachher" Bild muss gewählt werden</small>
+            <small *ngIf="postimg.invalid && postimg.touched">Ein "Nachher" Bild muss gewählt werden</small>
           </div>
-          <img [src]="postImagePreview" *ngIf="postImagePreview"  style="width: 10rem">
+          <img [src]="postImagePreview" *ngIf="postImagePreview" style="width: 10rem">
           <img src="../../assets/images/noimage.webp" *ngIf="!postImagePreview" style="width: 10rem">
-          <input type="button" *ngIf="editMode && postImagePreview" (click)="deleteImage($event)" name="postImageDelete" value="Delete Image" >
+          <input type="button" *ngIf="editMode && postImagePreview" (click)="deleteImage($event)" name="postImageDelete"
+            value="Delete Image">
 
-        
-          <input type="submit" value="{{editMode ? 'Projekt anpassen' : 'Projekt hinzufügen'}}" [disabled]="!projectForm.valid && !editMode" >
+
+          <input type="submit" value="{{editMode ? 'Projekt anpassen' : 'Projekt hinzufügen'}}"
+            [disabled]="!projectForm.valid && !editMode">
           <div>
-            <small *ngIf="!projectForm.valid && !editMode" >Alle Felder mit *-Symbol sind Muss-Felder</small>
+            <small *ngIf="!projectForm.valid && !editMode">Alle Felder mit *-Symbol sind Muss-Felder</small>
           </div>
           <input type="button" *ngIf="editMode" value="Cancel" (click)="onCancelEditMode()">
         </form>
@@ -92,10 +102,10 @@
             <th>Technik</th>
             <th>Farben</th>
             <th>Preis</th>
-            <th>Vorher Bild Name</th>
-            <th>Vorher Bild Src</th>
-            <th>Nachher Bild Name</th>
-            <th>Nachher Bild Src</th>
+            <th>Vorher Bild</th>
+            <!-- <th>Vorher Bild Src</th> -->
+            <th>Nachher Bild</th>
+            <!-- <th>Nachher Bild Src</th> -->
             <th>Aktionen</th>
           </tr>
           <tr *ngIf="allProjects.length < 1 && !isFetching">
@@ -117,19 +127,26 @@
             <td>{{project.technique}}</td>
             <td>{{project.colors}}</td>
             <td>{{project.price}}</td>
-            <td>{{project.imgPreName}}</td>
-            <td>{{project.imgPreSrc}}</td>
-            <td>{{project.imgPostName}}</td>
-            <td>{{project.imgPostSrc}}</td>
-            <td><button class="btn-delete" (click)="onDeleteProject(project.id)">Löschen</button>
+            <td>
+              <div class="tr-img-preview">
+                <img src="{{project.imgPreSrc}}" style="width: 10rem" />
+                {{project.imgPreName}}
+              </div>
+            </td>
+            <td>
+              <div class="tr-img-preview">   
+                <img src="{{project.imgPostSrc}}" style="width: 10rem" />
+                {{project.imgPostName}}
+              </div>
+            </td>
             <td><button class="btn-edit" (click)="onEditClicked(project.id)">Bearbeiten</button></td>
+            <td><button class="btn-delete" (click)="onDeleteProject(project.id)">Löschen</button>   
           </tr>
         </table>
         <hr>
         <div class="action-btn-container">
           <button class="btn-fetch" (click)="onFetchProjects()">Projekte neu laden</button>
           <button class="btn-clear" (click)="onDeleteAllProjects()">Alle Projekte löschen</button>
- 
         </div>
       </div>
     </div>

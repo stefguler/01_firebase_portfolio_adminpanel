@@ -11,20 +11,20 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { environment } from '../environments/environment.prod';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { PortfolioComponent } from './portfolio/portfolio.component';
+import { PortfolioComponent } from './pages/portfolio/portfolio.component';
 import { ProjectRequestsService } from './services/project-requests.service';
 import { CommonModule } from '@angular/common';
-import { ProjectsComponent } from './projects/projects.component';
-import { AdminComponent } from './admin/admin.component';
+import { ProjectsComponent } from './pages/projects/projects.component';
+import { AdminComponent } from './pages/admin/admin.component';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import {HttpClientModule} from '@angular/common/http';
 
 //auth
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { LoginComponent } from './login/login.component';
-import { SignupComponent } from './signup/signup.component';
-import { PwResetComponent } from './pw-reset/pw-reset.component';
+import { LoginComponent } from './authentification/login/login.component';
+import { SignupComponent } from './authentification/signup/signup.component';
+import { PwResetComponent } from './authentification/pw-reset/pw-reset.component';
 import { DialogboxComponent } from './dialogbox/dialogbox.component';
 
 
